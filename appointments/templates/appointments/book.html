@@ -1,0 +1,645 @@
+{% extends "base.html" %}
+
+{% block title %}Book Appointment — Telemedicine{% endblock %}
+
+{% block extra_css %}
+<style>
+  .book-page {
+    --book-navy: #001f3f;
+    --book-navy-mid: #0a2a52;
+    --book-navy-soft: #143d6b;
+    --book-border: #e2e8f0;
+    --book-muted: #64748b;
+  }
+  .book-container {
+    background: linear-gradient(135deg, rgba(9, 210, 232, 0.08) 50%, rgba(0, 31, 63, 0.04) 100%);
+    min-height: calc(100vh - 70px);
+    padding: 32px 0 48px;
+  }
+  .book-header {
+    background: linear-gradient(165deg, #001f3f 0%, #0a2a52 45%, #143d6b 100%);
+    color: #fff;
+    padding: 28px 32px;
+    border-radius: 16px;
+    margin-bottom: 28px;
+    box-shadow: 0 12px 40px rgba(0, 31, 63, 0.28);
+    border: 1px solid rgba(180, 210, 255, 0.15);
+  }
+  .book-header-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .book-header-icon {
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    color: #fff;
+  }
+  .book-header h2 {
+    margin: 0;
+    font-weight: 700;
+    font-size: clamp(1.5rem, 4vw, 1.85rem);
+    letter-spacing: -0.02em;
+  }
+  .book-header p {
+    margin: 8px 0 0 0;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.82);
+    line-height: 1.45;
+    max-width: 36rem;
+  }
+  .btn-back {
+    background: #fff;
+    color: var(--book-navy);
+    border: 1px solid var(--book-border);
+    padding: 10px 18px;
+    border-radius: 10px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 22px;
+    box-shadow: 0 1px 3px rgba(0, 31, 63, 0.06);
+  }
+  .btn-back:hover {
+    border-color: var(--book-navy-mid);
+    color: var(--book-navy-soft);
+    box-shadow: 0 4px 12px rgba(0, 31, 63, 0.1);
+  }
+  .form-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 28px rgba(0, 31, 63, 0.08);
+    border: 1px solid var(--book-border);
+    padding: 2rem 2.25rem;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .book-form-section {
+    margin-bottom: 1.75rem;
+    padding-bottom: 1.75rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .book-form-section:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+  .book-form-section-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--book-navy-soft);
+    margin: 0 0 1.25rem 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .book-form-section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, #e2e8f0, transparent);
+    max-width: 120px;
+  }
+  .form-group {
+    margin-bottom: 1.35rem;
+  }
+  .form-group:last-child {
+    margin-bottom: 0;
+  }
+  .form-label {
+    color: var(--book-navy);
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0.01em;
+  }
+  .form-label i {
+    color: var(--book-navy-soft);
+    font-size: 1rem;
+    opacity: 0.9;
+  }
+  .input-wrapper {
+    position: relative;
+  }
+  .input-wrapper .input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--book-navy-soft);
+    font-size: 1.05rem;
+    z-index: 2;
+    opacity: 0.75;
+    pointer-events: none;
+  }
+  .form-card .form-control,
+  .form-card .form-select {
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    padding: 0.7rem 1rem 0.7rem 2.65rem;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background: #fff;
+    width: 100%;
+  }
+  .form-card .form-select {
+    cursor: pointer;
+    appearance: none;
+    background-color: #fff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23001f3f' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 14px;
+    padding-right: 2.5rem;
+  }
+  .form-card .form-control:hover,
+  .form-card .form-select:hover {
+    border-color: #94a3b8;
+  }
+  .form-card .form-control:focus,
+  .form-card .form-select:focus {
+    border-color: var(--book-navy-mid);
+    box-shadow: 0 0 0 3px rgba(0, 31, 63, 0.12);
+    outline: none;
+  }
+  .form-card textarea.form-control {
+    min-height: 132px;
+    resize: vertical;
+    padding: 0.85rem 1rem;
+  }
+  .form-card .form-hint {
+    display: block;
+    font-size: 0.8125rem;
+    color: var(--book-muted);
+    margin-top: 0.4rem;
+    line-height: 1.45;
+  }
+  .form-card .alert-danger {
+    border-radius: 10px;
+    border: 1px solid #fecaca;
+    font-size: 0.875rem;
+  }
+  .form-card .is-invalid {
+    border-color: #dc2626;
+  }
+  .form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-top: 1.75rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #f1f5f9;
+  }
+  .btn-book-primary {
+    background: linear-gradient(165deg, #001f3f 0%, #0a2a52 50%, #143d6b 100%);
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+    box-shadow: 0 4px 14px rgba(0, 31, 63, 0.25);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-book-primary:hover {
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(0, 31, 63, 0.32);
+    transform: translateY(-1px);
+  }
+  .btn-book-secondary {
+    background: #fff;
+    border: 1px solid #cbd5e1;
+    color: var(--book-navy);
+    padding: 0.65rem 1.35rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .btn-book-secondary:hover {
+    border-color: var(--book-navy-mid);
+    background: #f8fafc;
+    color: var(--book-navy);
+  }
+  @media (max-width: 576px) {
+    .form-card {
+      padding: 1.5rem 1.25rem;
+    }
+    .book-header {
+      padding: 22px 20px;
+    }
+  }
+  .slot-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #e8f4fd; color: #0a2a52; border: 1px solid #bfdbfe;
+    border-radius: 20px; padding: 6px 16px; font-size: 0.8125rem; font-weight: 600;
+    margin: 4px 6px 4px 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .slot-pill:hover {
+    background: #d1e9fb;
+    border-color: #0a2a52;
+    transform: translateY(-1px);
+  }
+  .slot-pill.selected {
+    background: #0a2a52;
+    color: #fff;
+    border-color: #001f3f;
+    box-shadow: 0 4px 10px rgba(0, 31, 63, 0.2);
+  }
+  .slot-pill i { font-size: .85rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="book-container book-page">
+  <div class="container">
+    <a href="{% url 'appointments:list' %}" class="btn-back">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i> Back to appointments
+    </a>
+    <div class="book-header">
+      <div class="book-header-content">
+        <div class="book-header-icon" aria-hidden="true">
+          <i class="bi bi-calendar-plus"></i>
+        </div>
+        <div>
+          <h2>Book appointment</h2>
+          <p>Choose a provider and preferred date. Your clinician will confirm timing based on clinical need.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <form method="post" action="">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger mb-4" role="alert">
+            {% for err in form.non_field_errors %}<div>{{ err }}</div>{% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="book-form-section">
+          <h3 class="book-form-section-title">Type of condition</h3>
+
+          <div class="form-group">
+            <label for="id_sickness_type" class="form-label">
+              <i class="bi bi-heart-pulse" aria-hidden="true"></i> What type of condition are you experiencing?
+            </label>
+            <div class="input-wrapper">
+              <i class="bi bi-chevron-down input-icon" aria-hidden="true"></i>
+              {{ form.sickness_type }}
+            </div>
+            {% if form.sickness_type.errors %}
+              <div class="text-danger small mt-1">{{ form.sickness_type.errors.0 }}</div>
+            {% endif %}
+            <span class="form-hint">Selecting a condition type will automatically filter doctors by their specialization.</span>
+          </div>
+
+          <div id="sickness-other-group" class="form-group{% if form.sickness_type.value != 'other' %} d-none{% endif %}">
+            <label for="id_sickness_other" class="form-label">
+              <i class="bi bi-pencil" aria-hidden="true"></i> Please describe your condition
+            </label>
+            <div class="input-wrapper">
+              {{ form.sickness_other }}
+            </div>
+            {% if form.sickness_other.errors %}
+              <div class="text-danger small mt-1">{{ form.sickness_other.errors.0 }}</div>
+            {% endif %}
+            <span class="form-hint">Enter the name or description of your condition.</span>
+          </div>
+
+          <div id="filter-status" class="d-none mt-2">
+            <span class="badge rounded-pill px-3 py-2" style="background:#e8f4fd; color:#0a2a52; font-size:0.8rem; font-weight:600;">
+              <i class="bi bi-funnel-fill me-1"></i>
+              <span id="filter-status-text"></span>
+            </span>
+          </div>
+
+          <div id="no-specialist-alert" class="d-none mt-2">
+            <div class="alert alert-warning py-2 px-3 mb-0" style="border-radius:10px; font-size:0.875rem;">
+              <i class="bi bi-exclamation-triangle me-1"></i>
+              No registered specialists found for this condition. Please choose a different condition or contact us directly.
+            </div>
+          </div>
+        </div>
+
+        <div class="book-form-section">
+          <h3 class="book-form-section-title">Scheduling</h3>
+
+          <div class="form-group">
+            <label for="id_provider" class="form-label">
+              <i class="bi bi-person-badge" aria-hidden="true"></i> Provider
+            </label>
+            <div class="input-wrapper">
+              <i class="bi bi-chevron-down input-icon" aria-hidden="true"></i>
+              {{ form.provider }}
+            </div>
+            {% if form.provider.errors %}
+              <div class="text-danger small mt-1">{{ form.provider.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <!-- Availability slots panel — shown when a provider is selected -->
+          <div id="availability-panel" class="d-none mb-3">
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:1rem 1.25rem;">
+              <div class="d-flex align-items-center gap-2 mb-2" style="font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#0a2a52;">
+                <i class="bi bi-clock"></i> Available times
+              </div>
+              <div id="availability-loading" class="text-muted" style="font-size:.875rem;">
+                <span class="spinner-border spinner-border-sm me-1"></span> Loading...
+              </div>
+              <div id="availability-slots" class="d-flex flex-wrap"></div>
+              <div id="availability-empty" class="d-none text-muted" style="font-size:.875rem;">
+                <i class="bi bi-calendar-x me-1"></i> This provider has not set any availability yet.
+              </div>
+              <input type="hidden" name="selected_slot_id" id="selected-slot-id">
+              {{ form.start_time }}
+              {{ form.end_time }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="id_date" class="form-label">
+              <i class="bi bi-calendar3" aria-hidden="true"></i> Preferred date
+            </label>
+            <div class="input-wrapper">
+              <i class="bi bi-calendar-event input-icon" aria-hidden="true"></i>
+              {{ form.date }}
+            </div>
+            {% if form.date.errors %}
+              <div class="text-danger small mt-1">{{ form.date.errors.0 }}</div>
+            {% endif %}
+            <span class="form-hint">Exact appointment time will be set or confirmed by your provider.</span>
+          </div>
+        </div>
+
+        <div class="book-form-section">
+          <h3 class="book-form-section-title">Reason for visit</h3>
+
+          <div class="form-group">
+            <label for="id_reason" class="form-label">
+              <i class="bi bi-chat-square-text" aria-hidden="true"></i> Clinical summary
+            </label>
+            {{ form.reason }}
+            {% if form.reason.errors %}
+              <div class="text-danger small mt-1">{{ form.reason.errors.0 }}</div>
+            {% endif %}
+            <span class="form-hint">A clear summary helps your provider prioritize and prepare for your visit.</span>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-book-primary">
+            <i class="bi bi-check-lg" aria-hidden="true"></i> Request appointment
+          </button>
+          <a href="{% url 'appointments:list' %}" class="btn-book-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  const providerMap = {{ provider_map_json|safe }};
+  const allProviders = {{ all_providers_json|safe }};
+
+  const sicknessSelect = document.getElementById('id_sickness_type');
+  const providerSelect = document.getElementById('id_provider');
+  const filterStatus = document.getElementById('filter-status');
+  const filterStatusText = document.getElementById('filter-status-text');
+  const noSpecialistAlert = document.getElementById('no-specialist-alert');
+  const providerGroup = providerSelect.closest('.form-group');
+
+  // Show/hide "other" text input
+  const otherGroup = document.getElementById('sickness-other-group');
+  const otherInput = document.getElementById('id_sickness_other');
+
+  function rebuildProviderSelect(providers) {
+    const currentVal = providerSelect.value;
+    providerSelect.innerHTML = '';
+
+    const empty = document.createElement('option');
+    empty.value = '';
+    empty.textContent = '---------';
+    providerSelect.appendChild(empty);
+
+    providers.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = p.name + (p.specialization ? ' \u2014 ' + p.specialization : '');
+      if (String(p.id) === currentVal) opt.selected = true;
+      providerSelect.appendChild(opt);
+    });
+  }
+
+  function filterByOtherText() {
+    const query = otherInput.value.trim().toLowerCase();
+
+    if (!query) {
+      // Nothing typed yet — clear the list and wait
+      rebuildProviderSelect([]);
+      filterStatus.classList.add('d-none');
+      noSpecialistAlert.classList.add('d-none');
+      return;
+    }
+
+    // Match against provider specialization using the typed text
+    const matched = allProviders.filter(p =>
+      p.specialization.toLowerCase().includes(query)
+    );
+
+    if (matched.length > 0) {
+      rebuildProviderSelect(matched);
+      filterStatusText.textContent = matched.length + ' specialist(s) found for: "' + otherInput.value.trim() + '"';
+      filterStatus.classList.remove('d-none');
+      noSpecialistAlert.classList.add('d-none');
+    } else {
+      rebuildProviderSelect([]);
+      filterStatus.classList.add('d-none');
+      noSpecialistAlert.classList.remove('d-none');
+    }
+  }
+
+  // Debounce helper
+  function debounce(fn, delay) {
+    let timer;
+    return function () { clearTimeout(timer); timer = setTimeout(fn, delay); };
+  }
+
+  otherInput.addEventListener('input', debounce(function () {
+    if (sicknessSelect.value === 'other') filterByOtherText();
+  }, 300));
+
+  function filterProviders() {
+    const sickness = sicknessSelect.value;
+
+    // No selection or general — show all providers
+    if (!sickness || sickness === 'general') {
+      rebuildProviderSelect(allProviders);
+      providerGroup.classList.remove('d-none');
+      filterStatus.classList.add('d-none');
+      noSpecialistAlert.classList.add('d-none');
+      return;
+    }
+
+    // "Other" — show all providers since we can't match a free-text condition
+    if (sickness === 'other') {
+      filterByOtherText();
+      return;
+    }
+
+    const matched = providerMap[sickness] || [];
+
+    if (matched.length > 0) {
+      // Strict: only show matched specialists
+      rebuildProviderSelect(matched);
+      providerGroup.classList.remove('d-none');
+      const label = sicknessSelect.options[sicknessSelect.selectedIndex].text;
+      filterStatusText.textContent = matched.length + ' specialist(s) available for: ' + label;
+      filterStatus.classList.remove('d-none');
+      noSpecialistAlert.classList.add('d-none');
+    } else {
+      // No specialists — clear the dropdown and show alert
+      rebuildProviderSelect([]);
+      providerGroup.classList.remove('d-none');
+      filterStatus.classList.add('d-none');
+      noSpecialistAlert.classList.remove('d-none');
+    }
+  }
+
+  function toggleOtherField() {
+    if (sicknessSelect.value === 'other') {
+      otherGroup.classList.remove('d-none');
+      otherInput.required = true;
+      filterByOtherText();
+    } else {
+      otherGroup.classList.add('d-none');
+      otherInput.required = false;
+      otherInput.value = '';
+    }
+  }
+
+  sicknessSelect.addEventListener('change', function () {
+    filterProviders();
+    toggleOtherField();
+  });
+
+  // --- Provider availability slots ---
+  const availPanel   = document.getElementById('availability-panel');
+  const availLoading = document.getElementById('availability-loading');
+  const availSlots   = document.getElementById('availability-slots');
+  const availEmpty   = document.getElementById('availability-empty');
+  const dateInput    = document.getElementById('id_date');
+  const startTimeInput = document.getElementById('id_start_time');
+  const endTimeInput   = document.getElementById('id_end_time');
+
+  function loadProviderSlots(providerId) {
+    if (!providerId) {
+      availPanel.classList.add('d-none');
+      return;
+    }
+    availPanel.classList.remove('d-none');
+    availLoading.classList.remove('d-none');
+    availSlots.innerHTML = '';
+    availSlots.classList.add('d-none');
+    availEmpty.classList.add('d-none');
+
+    fetch(`/appointments/provider/${providerId}/slots/`)
+      .then(r => r.json())
+      .then(data => {
+        availLoading.classList.add('d-none');
+        if (data.slots && data.slots.length > 0) {
+          data.slots.forEach(s => {
+            const pill = document.createElement('span');
+            pill.className = 'slot-pill';
+            pill.innerHTML = `<i class="bi bi-calendar3"></i>${s.label} &nbsp; <i class="bi bi-clock"></i>${s.start} &ndash; ${s.end}`;
+            
+            pill.addEventListener('click', function() {
+              // Toggle selected class
+              document.querySelectorAll('.slot-pill').forEach(p => p.classList.remove('selected'));
+              this.classList.add('selected');
+              
+              // Update hidden fields and date input
+              if (s.date) {
+                dateInput.value = s.date;
+              }
+              
+              // Convert 12h time to 24h for hidden time inputs
+              function to24h(timeStr) {
+                const parts = timeStr.split(' ');
+                if (parts.length < 2) return timeStr; // Already 24h or invalid
+                
+                const time = parts[0];
+                const modifier = parts[1];
+                let [hours, minutes] = time.split(':');
+                
+                let h = parseInt(hours, 10);
+                if (modifier === 'PM' && h < 12) h += 12;
+                if (modifier === 'AM' && h === 12) h = 0;
+                
+                return `${String(h).padStart(2, '0')}:${minutes}`;
+              }
+              
+              startTimeInput.value = to24h(s.start);
+              endTimeInput.value = to24h(s.end);
+              
+              console.log(`Selected slot: ${s.date} ${startTimeInput.value}-${endTimeInput.value}`);
+            });
+            
+            availSlots.appendChild(pill);
+          });
+          availSlots.classList.remove('d-none');
+        } else {
+          availEmpty.classList.remove('d-none');
+        }
+      })
+      .catch(() => {
+        availLoading.classList.add('d-none');
+        availEmpty.classList.remove('d-none');
+      });
+  }
+
+  providerSelect.addEventListener('change', function () {
+    loadProviderSlots(this.value);
+  });
+
+  // Load on page render if a provider is already selected (validation re-render)
+  if (providerSelect.value) loadProviderSlots(providerSelect.value);
+
+  // Apply on page load (e.g. after form validation error re-render)
+  filterProviders();
+  toggleOtherField();
+})();
+</script>
+{% endblock %}

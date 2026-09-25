@@ -1,0 +1,25 @@
+# Telemedical Consultation Platform — Dependencies
+# Python 3.10+ recommended
+
+Django>=5.0,<6.0
+psycopg2-binary>=2.9.9
+dj-database-url>=2.1.0
+python-dotenv>=1.0.0
+Pillow>=10.0.0
+django-crispy-forms>=2.1
+crispy-bootstrap5>=2024.2
+
+# Social Authentication
+django-allauth>=0.63.6
+
+# WebRTC Real-time Communication
+channels>=4.0.0
+channels-redis>=4.2.0
+daphne>=4.0.0
+
+# Production dependencies
+django-redis>=5.2.0
+psycopg2-binary>=2.9.9
+Pillow>=10.0.0
+reportlab>=4.0.0
+python-docx>=1.1.0

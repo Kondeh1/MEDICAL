@@ -1,0 +1,428 @@
+{% extends "base.html" %}
+
+{% block title %}Providers — Medical Director{% endblock %}
+
+{% block extra_css %}
+<style>
+  .providers-container {
+    background: linear-gradient(135deg,#09d2e822 50%);
+    min-height: calc(100vh - 70px);
+    padding: 30px 0;
+  }
+  .providers-header {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 50%, #0d1b2a 100%);
+    color: white;
+    padding: 40px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 15px 40px rgba(10, 22, 40, 0.25);
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-back {
+    background: white;
+    color: #0a1628;
+    border: 1px solid #0a1628;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+  }
+  .btn-back:hover {
+    background: #0a1628;
+    color: white;
+  }
+  .btn-back i {
+    font-size: 1rem;
+  }
+  .providers-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255,193,7,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .providers-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .providers-header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .providers-header-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #18dae4 0%, #20c997 100%);
+    border-radius: 16px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+    box-shadow: 0 8px 20px rgba(32, 201, 151, 0.3);
+  }
+  .providers-header h2 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 2.2rem;
+  }
+  .providers-header p {
+    margin: 5px 0 0 0;
+    opacity: 0.8;
+  }
+  .stats-row {
+    display: flex;
+    gap: 20px;
+  }
+  .stat-pill {
+    background: rgba(255,255,255,0.1);
+    padding: 10px 20px;
+    border-radius: 50px;
+    text-align: center;
+  }
+  .stat-pill .number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #18dae4;
+  }
+  .stat-pill .label {
+    font-size: 0.8rem;
+    opacity: 0.8;
+  }
+  .filter-card {
+    background: rgb(255, 255, 255);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgb(9, 3, 75);
+    border: 1px solid rgba(10, 22, 40, 0.1);
+    margin-bottom: 25px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .filter-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(40, 19, 10, 0.15);
+    border-color: #18dae4;
+  }
+  .filter-card .card-body {
+    padding: 25px;
+  }
+  .provider-card {
+    background: rgb(233, 245, 244);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(10, 22, 40, 0.08);
+    border: 1px solid rgba(10, 22, 40, 0.1);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    height: 100%;
+  }
+  .provider-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(10, 22, 40, 0.2);
+    border-color: #18dae4;
+  }
+  .provider-card .card-header {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: white;
+    padding: 20px;
+    position: relative;
+  }
+  .provider-card .card-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #20c997,#18dae4 );
+  }
+  .provider-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,   #20c997 0%, #18dae4 100%);
+    color: #130c58;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    border: 3px solid white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
+  .provider-card .card-body {
+    padding: 20px;
+  }
+  .provider-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0a1628;
+    margin-bottom: 5px;
+  }
+  .provider-email {
+    color: #031452;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+  }
+  .provider-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  .meta-badge {
+    background: rgba(10, 22, 40, 0.05);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: #0a1628;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .status-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .status-approved {
+    background: rgba(32, 201, 151, 0.15);
+    color: #20c0c9;
+  }
+  .status-pending {
+    background: rgba(32, 201, 151, 0.15);
+    color: #20c0c9;
+  }
+  .status-rejected {
+    background: rgba(220, 53, 69, 0.15);
+    color: #dc3545;
+  }
+  .btn-gold {
+    background: linear-gradient(135deg, #20c0c9 0%, #20c997 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-gold:hover {
+    background: linear-gradient(135deg, #18dae4 0%, #18dae4 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(32, 201, 151, 0.4);
+  }
+  .btn-outline-gold {
+    background: transparent;
+    border: 2px solid #18dae4;
+    color: #0a1628;
+    padding: 8px 18px;
+    border-radius: 10px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-outline-gold:hover {
+    background: #18dae4;
+    color: white;
+  }
+  .btn-blueblack {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+  .btn-blueblack:hover {
+    background: linear-gradient(135deg, #1a2a3a 0%, #0a1628 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(10, 22, 40, 0.3);
+  }
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+  }
+  .empty-state i {
+    font-size: 4rem;
+    color: rgba(10, 22, 40, 0.2);
+    margin-bottom: 20px;
+  }
+  .pagination .page-link {
+    color: #0a1628;
+    border: 1px solid rgba(10, 22, 40, 0.15);
+    margin: 0 3px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+  .pagination .page-link:hover {
+    background: #0a1628;
+    color: white;
+    border-color: #0a1628;
+    transform: translateY(-2px);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="providers-container">
+  <div class="container">
+    <a href="{% url 'dashboard:admin_dashboard' %}" class="btn-back">
+      <i class="bi bi-arrow-left"></i> Back to Admin Dashboard
+    </a>
+    <!-- Header -->
+    <div class="providers-header">
+      <div class="providers-header-content">
+        <div class="providers-header-left">
+          <div class="providers-header-icon">
+            <i class="bi bi-heart-pulse"></i>
+          </div>
+          <div>
+            <h2>Healthcare Providers</h2>
+            <p>Manage and monitor provider accounts and credentials</p>
+          </div>
+        </div>
+        <div class="stats-row">
+          <div class="stat-pill">
+            <div class="number">{{ total_providers }}</div>
+            <div class="label">Total</div>
+          </div>
+          <div class="stat-pill">
+            <div class="number">{{ pending_count }}</div>
+            <div class="label">Pending</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Card -->
+    <div class="filter-card">
+      <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+          <div class="col-md-4">
+            <label class="form-label fw-semibold"><i class="bi bi-funnel"></i> Filter by Status</label>
+            <select name="status" class="form-select">
+              <option value="">All Providers</option>
+              <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Approved</option>
+              <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending Approval</option>
+              <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+            </select>
+          </div>
+          <div class="col-md-5">
+            <label class="form-label fw-semibold"><i class="bi bi-search"></i> Search</label>
+            <input type="text" name="search" class="form-control" placeholder="Name, email, or specialization..." value="{{ search }}">
+          </div>
+          <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn-gold flex-fill"><i class="bi bi-search"></i> Search</button>
+            <a href="{% url 'dashboard:providers' %}" class="btn-outline-gold"><i class="bi bi-x-lg"></i></a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Providers Grid -->
+    <div class="row g-4">
+      {% for provider in providers %}
+        <div class="col-md-6 col-lg-4">
+          <div class="provider-card">
+            <div class="card-header">
+              <div class="d-flex align-items-center gap-3">
+                <div class="provider-avatar">
+                  {{ provider.user.get_full_name|default:provider.user.username|first|upper }}
+                </div>
+                <div class="flex-grow-1">
+                  <h5 class="mb-0">{{ provider.user.get_full_name|default:provider.user.username }}</h5>
+                  <small class="opacity-75">{{ provider.specialization }}</small>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="provider-email">
+                <i class="bi bi-envelope"></i> {{ provider.user.email|default:"No email" }}
+              </div>
+              <div class="provider-meta">
+                <span class="meta-badge"><i class="bi bi-award"></i> {{ provider.credentials }}</span>
+                <span class="meta-badge"><i class="bi bi-hash"></i> {{ provider.license_number|default:"No license" }}</span>
+              </div>
+              <div class="mb-3">
+                {% if provider.is_approved %}
+                  <span class="status-badge status-approved"><i class="bi bi-check-circle"></i> Approved</span>
+                {% elif provider.approval_status == 'PENDING' %}
+                  <span class="status-badge status-pending"><i class="bi bi-hourglass-split"></i> Pending</span>
+                {% else %}
+                  <span class="status-badge status-rejected"><i class="bi bi-x-circle"></i> Rejected</span>
+                {% endif %}
+              </div>
+              <div class="d-flex gap-2">
+                <a href="{% url 'dashboard:provider_credentials_detail' provider.user.pk %}" class="btn-blueblack flex-fill">
+                  <i class="bi bi-eye"></i> View Details
+                </a>
+                {% if provider.approval_status == 'PENDING' %}
+                  <a href="{% url 'dashboard:provider_application_detail' provider.pk %}" class="btn-gold">
+                    <i class="bi bi-check-lg"></i> Review
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <div class="col-12">
+          <div class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <h4>No Providers Found</h4>
+            <p class="text-muted">No healthcare providers match your search criteria.</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if providers.has_other_pages %}
+      <nav class="mt-5">
+        <ul class="pagination justify-content-center">
+          {% if providers.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ providers.previous_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if search %}&search={{ search|urlencode }}{% endif %}">
+                <i class="bi bi-chevron-left"></i> Previous
+              </a>
+            </li>
+          {% endif %}
+          <li class="page-item disabled">
+            <span class="page-link">Page {{ providers.number }} of {{ providers.paginator.num_pages }}</span>
+          </li>
+          {% if providers.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ providers.next_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if search %}&search={{ search|urlencode }}{% endif %}">
+                Next <i class="bi bi-chevron-right"></i>
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

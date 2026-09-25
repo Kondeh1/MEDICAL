@@ -1,0 +1,350 @@
+{% extends "base.html" %}
+
+{% block title %}Messages — Telemedicine{% endblock %}
+
+{% block extra_css %}
+<style>
+  .messages-container {
+    background: linear-gradient(135deg,#09d2e822 50%);
+    min-height: calc(100vh - 70px);
+    padding: 30px 0;
+  }
+  .messages-header {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 50%, #0d1b2a 100%);
+    color: white;
+    padding: 40px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 15px 40px rgba(10, 22, 40, 0.25);
+    position: relative;
+    overflow: hidden;
+  }
+  .messages-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255,193,7,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .messages-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .messages-header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .messages-header-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #18dae4 0%, #20c997 100%);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+    box-shadow: 0 8px 20px rgba(32, 201, 151, 0.3);
+  }
+  .messages-header h2 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 2.2rem;
+  }
+  .messages-header p {
+    margin: 5px 0 0 0;
+    opacity: 0.8;
+  }
+  .stats-row {
+    display: flex;
+    gap: 20px;
+  }
+  .stat-pill {
+    background: rgba(255,255,255,0.1);
+    padding: 10px 20px;
+    border-radius: 50px;
+    text-align: center;
+  }
+  .stat-pill .number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #18dae4;
+  }
+  .stat-pill .label {
+    font-size: 0.8rem;
+    opacity: 0.8;
+  }
+  .missed-calls-card {
+    background: rgb(233, 245, 244);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(10, 22, 40, 0.08);
+    border: 1px solid rgba(10, 22, 40, 0.1);
+    margin-bottom: 25px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .missed-calls-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(10, 22, 40, 0.2);
+    border-color: #18dae4;
+  }
+  .missed-calls-header {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: white;
+    padding: 20px;
+    position: relative;
+    font-weight: 700;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .missed-calls-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #20c997,#18dae4 );
+  }
+  .missed-call-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 25px;
+    border-bottom: 1px solid rgba(10, 22, 40, 0.1);
+    transition: background 0.3s ease;
+  }
+  .missed-call-item:last-child {
+    border-bottom: none;
+  }
+  .missed-call-item:hover {
+    background: rgba(32, 201, 151, 0.1);
+  }
+  .caller-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .caller-name {
+    font-weight: 700;
+    color: #0a1628;
+    font-size: 1.05rem;
+  }
+  .call-badge {
+    background: linear-gradient(135deg, #20c0c9 0%, #20c997 100%);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .call-time {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-left: 8px;
+  }
+  .btn-gold {
+    background: linear-gradient(135deg, #20c0c9 0%, #20c997 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-gold:hover {
+    background: linear-gradient(135deg, #18dae4 0%, #18dae4 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(32, 201, 151, 0.4);
+  }
+  .conversations-card {
+    background: rgb(233, 245, 244);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(10, 22, 40, 0.08);
+    border: 1px solid rgba(10, 22, 40, 0.1);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .conversations-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(10, 22, 40, 0.2);
+    border-color: #18dae4;
+  }
+  .conversations-header {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: white;
+    padding: 20px;
+    position: relative;
+    font-weight: 700;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .conversations-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #20c997,#18dae4 );
+  }
+  .conversation-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px;
+    border-bottom: 1px solid rgba(10, 22, 40, 0.1);
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+  }
+  .conversation-item:last-child {
+    border-bottom: none;
+  }
+  .conversation-item:hover {
+    background: rgba(32, 201, 151, 0.1);
+    color: inherit;
+  }
+  .conversation-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    color: #0a1628;
+  }
+  .conversation-avatar {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, #18dae4 0%, #20c997 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+  .conversation-time {
+    color: #64748b;
+    font-size: 0.9rem;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+  }
+  .empty-state i {
+    font-size: 4rem;
+    color: rgba(10, 22, 40, 0.2);
+    margin-bottom: 20px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="messages-container">
+  <div class="container">
+    <!-- Header -->
+    <div class="messages-header">
+      <div class="messages-header-content">
+        <div class="messages-header-left">
+          <div class="messages-header-icon">
+            <i class="bi bi-chat-dots"></i>
+          </div>
+          <div>
+            <h2>Messages</h2>
+            <p>Stay connected with your healthcare providers</p>
+          </div>
+        </div>
+        <div class="stats-row">
+          <div class="stat-pill">
+            <div class="number">{{ conversations|length }}</div>
+            <div class="label">Conversations</div>
+          </div>
+          {% if missed_calls %}
+          <div class="stat-pill">
+            <div class="number">{{ missed_calls|length }}</div>
+            <div class="label">Missed Calls</div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    {# Missed Call Notifications #}
+    {% if missed_calls %}
+    <div class="missed-calls-card">
+      <div class="missed-calls-header">
+        <i class="bi bi-telephone-x"></i> Missed Calls
+      </div>
+      {% for call in missed_calls %}
+        <div class="missed-call-item">
+          <div class="caller-info">
+            <span class="caller-name">{{ call.caller.get_full_name|default:call.caller.username }}</span>
+            <span class="call-badge">
+              <i class="bi bi-{% if call.call_type == 'VIDEO' %}camera-video{% else %}telephone{% endif %}"></i>
+              {{ call.get_call_type_display }}
+            </span>
+            <span class="call-time">{{ call.started_at|date:"M d, H:i" }}</span>
+          </div>
+          <a href="{% url 'messaging:thread' call.conversation.pk %}" class="btn-gold">
+            <i class="bi bi-chat-dots"></i> Message
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Conversations -->
+    <div class="conversations-card">
+      <div class="conversations-header">
+        <i class="bi bi-chat-square-text"></i> Conversations
+      </div>
+      {% for conv in conversations %}
+        <a href="{% url 'messaging:thread' conv.pk %}" class="conversation-item">
+          <div class="conversation-user">
+            <div class="conversation-avatar">
+              {% if user.is_patient %}
+                {{ conv.provider.get_full_name|default:conv.provider.username|first|upper }}
+              {% else %}
+                {{ conv.patient.get_full_name|default:conv.patient.username|first|upper }}
+              {% endif %}
+            </div>
+            <span>
+              {% if user.is_patient %}
+                {{ conv.provider.get_full_name|default:conv.provider.username }}
+              {% else %}
+                {{ conv.patient.get_full_name|default:conv.patient.username }}
+              {% endif %}
+            </span>
+          </div>
+          <span class="conversation-time">{{ conv.updated_at|date:"M d, H:i" }}</span>
+        </a>
+      {% empty %}
+        <div class="empty-state">
+          <i class="bi bi-inbox"></i>
+          <p>No conversations yet.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

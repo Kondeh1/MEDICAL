@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Appointment — Telemedicine{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4"><i class="bi bi-calendar-event"></i> Appointment Details</h2>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <h5><i class="bi bi-person-circle"></i> Patient</h5>
+          <p><strong>Name:</strong> {{ appointment.patient.get_full_name|default:appointment.patient.username }}</p>
+          {% if appointment.reason %}
+            <p><strong>Medical Issue:</strong> {{ appointment.reason }}</p>
+          {% endif %}
+        </div>
+        <div class="col-md-6">
+          <h5><i class="bi bi-person-badge"></i> Provider</h5>
+          <p><strong>Name:</strong> {{ appointment.provider.get_full_name|default:appointment.provider.username }}</p>
+        </div>
+      </div>
+      
+      <hr>
+      
+      <div class="row">
+        <div class="col-md-6">
+          <h5><i class="bi bi-calendar3"></i> Appointment Date</h5>
+          <p><strong>Date:</strong> {{ appointment.date|date:"l, F d, Y" }}</p>
+          
+          {% if scheduled_time %}
+            <p><strong>Scheduled Time:</strong> {{ scheduled_time }}</p>
+          {% elif status_message %}
+            <p><strong>Status:</strong> <span class="badge bg-warning">{{ status_message }}</span></p>
+          {% else %}
+            <p><strong>Time:</strong> {{ appointment.start_time|time:"g:i A" }} – {{ appointment.end_time|time:"g:i A" }}</p>
+          {% endif %}
+        </div>
+        <div class="col-md-6">
+          <h5><i class="bi bi-info-circle"></i> Status</h5>
+          <p>
+            <strong>Status:</strong> 
+            {% if appointment.status == 'PENDING' %}
+              <span class="badge bg-warning">Pending Approval</span>
+            {% elif appointment.status == 'CONFIRMED' %}
+              <span class="badge bg-success">Confirmed</span>
+            {% elif appointment.status == 'REJECTED' %}
+              <span class="badge bg-danger">Rejected</span>
+            {% elif appointment.status == 'CANCELLED' %}
+              <span class="badge bg-secondary">Cancelled</span>
+            {% elif appointment.status == 'COMPLETED' %}
+              <span class="badge bg-info">Completed</span>
+            {% endif %}
+          </p>
+        </div>
+      </div>
+      
+      <div class="mt-4">
+        {% if user.is_provider and appointment.status == 'PENDING' %}
+          <a href="{% url 'appointments:accept_reject' appointment.pk %}" class="btn btn-primary">
+            <i class="bi bi-calendar-check"></i> Approve / Reject
+          </a>
+        {% endif %}
+        <a href="{% url 'appointments:list' %}" class="btn btn-outline-secondary">
+          <i class="bi bi-arrow-left"></i> Back to Appointments
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

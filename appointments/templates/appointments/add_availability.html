@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Add Availability — Telemedicine{% endblock %}
+
+{% block extra_css %}
+<style>
+  .avail-container {
+    background: linear-gradient(135deg, rgba(9,210,232,0.07) 50%, rgba(0,31,63,0.04) 100%);
+    min-height: calc(100vh - 70px);
+    padding: 32px 0 48px;
+  }
+  .avail-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 28px rgba(0,31,63,0.08);
+    border: 1px solid #e2e8f0;
+    padding: 2rem 2.25rem;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .avail-header {
+    background: linear-gradient(165deg, #001f3f 0%, #0a2a52 45%, #143d6b 100%);
+    color: #fff;
+    padding: 24px 28px;
+    border-radius: 14px;
+    margin-bottom: 28px;
+    box-shadow: 0 8px 30px rgba(0,31,63,0.22);
+  }
+  .avail-header h2 { margin: 0; font-size: 1.4rem; font-weight: 700; }
+  .avail-header p  { margin: 6px 0 0; font-size: 0.9rem; color: rgba(255,255,255,0.8); }
+  .form-label { font-weight: 600; font-size: 0.875rem; color: #001f3f; margin-bottom: 0.4rem; }
+  .form-hint  { font-size: 0.8rem; color: #64748b; margin-top: 0.3rem; display: block; }
+  .form-control, .form-select {
+    border: 1px solid #cbd5e1; border-radius: 10px;
+    padding: 0.65rem 1rem; font-size: 0.9375rem;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: #0a2a52;
+    box-shadow: 0 0 0 3px rgba(0,31,63,0.1);
+    outline: none;
+  }
+  .divider-or {
+    display: flex; align-items: center; gap: 12px;
+    color: #94a3b8; font-size: 0.8rem; font-weight: 600;
+    margin: 1.25rem 0;
+  }
+  .divider-or::before, .divider-or::after {
+    content: ''; flex: 1; height: 1px; background: #e2e8f0;
+  }
+  .btn-primary-custom {
+    background: linear-gradient(165deg, #001f3f 0%, #0a2a52 50%, #143d6b 100%);
+    color: #fff; border: none; padding: 0.7rem 1.5rem;
+    border-radius: 10px; font-weight: 600; font-size: 0.9375rem;
+    box-shadow: 0 4px 14px rgba(0,31,63,0.22);
+    transition: box-shadow .2s, transform .15s;
+  }
+  .btn-primary-custom:hover { color:#fff; box-shadow: 0 6px 20px rgba(0,31,63,0.3); transform: translateY(-1px); }
+  .btn-cancel {
+    background: #fff; border: 1px solid #cbd5e1; color: #001f3f;
+    padding: 0.65rem 1.25rem; border-radius: 10px; font-weight: 600;
+    font-size: 0.9375rem; text-decoration: none;
+    transition: border-color .2s, background .2s;
+  }
+  .btn-cancel:hover { border-color: #0a2a52; background: #f8fafc; color: #001f3f; }
+  .errorlist { list-style: none; padding: 0; margin: 0.3rem 0 0; }
+  .errorlist li { color: #dc2626; font-size: 0.8125rem; }
+  .non-field-errors { background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1rem; color: #dc2626; font-size: 0.875rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="avail-container">
+  <div class="container">
+    <a href="{% url 'appointments:provider_schedule' %}" class="btn-cancel d-inline-flex align-items-center gap-2 mb-3" style="font-size:.875rem;">
+      <i class="bi bi-arrow-left"></i> Back to schedule
+    </a>
+
+    <div class="avail-header">
+      <h2><i class="bi bi-clock-history me-2"></i>Add availability slot</h2>
+      <p>Set a recurring weekly slot or a one-off date when you are available for appointments.</p>
+    </div>
+
+    <div class="avail-card">
+      <form method="post">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="non-field-errors">
+            {% for err in form.non_field_errors %}{{ err }}{% endfor %}
+          </div>
+        {% endif %}
+
+        <p class="text-muted" style="font-size:.85rem; margin-bottom:1.25rem;">
+          Fill in <strong>Day of week</strong> for a recurring slot, or <strong>Specific date</strong> for a one-off. At least one is required.
+        </p>
+
+        <div class="mb-3">
+          <label class="form-label">Day of week <span class="text-muted fw-normal">(recurring)</span></label>
+          {{ form.day_of_week }}
+          {% if form.day_of_week.errors %}<ul class="errorlist">{% for e in form.day_of_week.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        </div>
+
+        <div class="divider-or">OR</div>
+
+        <div class="mb-3">
+          <label class="form-label">Specific date <span class="text-muted fw-normal">(one-off)</span></label>
+          {{ form.date }}
+          {% if form.date.errors %}<ul class="errorlist">{% for e in form.date.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-6">
+            <label class="form-label">Start time</label>
+            {{ form.start_time }}
+            {% if form.start_time.errors %}<ul class="errorlist">{% for e in form.start_time.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+          </div>
+          <div class="col-6">
+            <label class="form-label">End time</label>
+            {{ form.end_time }}
+            {% if form.end_time.errors %}<ul class="errorlist">{% for e in form.end_time.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+          </div>
+        </div>
+
+        <div class="mb-4 form-check">
+          {{ form.is_available }}
+          <label class="form-check-label" style="font-size:.9rem;">Mark as active (visible to patients)</label>
+        </div>
+
+        <div class="d-flex gap-3 align-items-center">
+          <button type="submit" class="btn-primary-custom">
+            <i class="bi bi-plus-circle me-1"></i> Add slot
+          </button>
+          <a href="{% url 'appointments:provider_schedule' %}" class="btn-cancel">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}Provider Dashboard — Telemedicine{% endblock %}
+
+{% block extra_css %}
+<style>
+  .dashboard-container {
+    background: linear-gradient(135deg,#09d2e822 50%);
+    min-height: calc(100vh - 70px);
+    padding: 30px 0;
+  }
+  .dashboard-header {
+    color: #0a1628;
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  .dashboard-header i {
+    background: linear-gradient(135deg, #18dae4 0%, #20c997 100%);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 15px rgba(32, 201, 151, 0.3);
+  }
+  .action-card {
+    background: rgb(233, 245, 244);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(10, 22, 40, 0.08);
+    border: 1px solid rgba(10, 22, 40, 0.1);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    height: 100%;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+  }
+  .action-card:hover {
+    transform: translateY(-15px) scale(1.03);
+    box-shadow: 0 25px 50px rgba(10, 22, 40, 0.2);
+    border-color: #18dae4;
+    z-index: 10;
+  }
+  .action-card i {
+    font-size: 2.5rem;
+    color: #18dae4;
+    transition: all 0.3s ease;
+  }
+  .action-card:hover i {
+    transform: scale(1.1);
+  }
+  .action-card.primary {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: white;
+  }
+  .action-card.primary i {
+    color: white;
+  }
+  .action-card span {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #0a1628;
+  }
+  .action-card.primary span {
+    color: white;
+  }
+  .info-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(10, 22, 40, 0.08);
+    border: 1px solid rgba(10, 22, 40, 0.1);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .info-card:hover {
+    transform: translateY(-10px) scale(1.01);
+    box-shadow: 0 25px 50px rgba(10, 22, 40, 0.2);
+    border-color: #18dae4;
+    z-index: 10;
+  }
+  .info-card .card-header {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: white;
+    font-weight: 600;
+    padding: 20px 25px;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+  }
+  .info-card .card-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #20c997, #18dae4);
+  }
+  .info-card .card-header i {
+    font-size: 1.3rem;
+    color: #18dae4;
+  }
+  .info-card .list-group-item {
+    border-color: rgba(10, 22, 40, 0.1);
+    padding: 18px 25px;
+    transition: all 0.2s ease;
+  }
+  .info-card .list-group-item:hover {
+    background: rgba(24, 218, 228, 0.05);
+  }
+  .btn-respond {
+    background: linear-gradient(135deg, #20c0c9 0%, #20c997 100%);
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  .btn-respond:hover {
+    background: linear-gradient(135deg, #18dae4 0%, #18dae4 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(32, 201, 151, 0.4);
+  }
+  .card-footer {
+    background: #f8fafc;
+    border-top: 1px solid rgba(10, 22, 40, 0.1);
+    padding: 15px 25px;
+  }
+  .card-footer a {
+    color: #18dae4;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  .card-footer a:hover {
+    color: #20c997;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+  <div class="container">
+    <h2 class="dashboard-header">
+      <i class="bi bi-heart-pulse"></i>
+      Provider Dashboard
+    </h2>
+
+    <!-- Approval Status Alert -->
+    {% if not is_approved %}
+    <div class="alert alert-warning d-flex align-items-center mb-4" role="alert" style="border-radius: 12px; border-left: 4px solid #ffc107;">
+      <i class="bi bi-exclamation-triangle-fill me-3" style="font-size: 1.5rem;"></i>
+      <div>
+        <strong>Account Pending Approval</strong>
+        <p class="mb-0">Your provider account is currently under review by the medical director. You can access your dashboard, but patients will not be able to see you or book appointments until your account is approved.</p>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Action Cards -->
+    <div class="row g-4 mb-5">
+      <div class="col-md-6">
+        <a href="{% url 'appointments:provider_schedule' %}" class="action-card primary">
+          <i class="bi bi-calendar-week"></i>
+          <span>My Schedule</span>
+        </a>
+      </div>
+      <div class="col-md-6">
+        <a href="{% url 'appointments:list' %}" class="action-card">
+          <i class="bi bi-calendar-check"></i>
+          <span>Appointments</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Pending Requests Card -->
+    <div class="info-card">
+      <div class="card-header">
+        <i class="bi bi-clock-history"></i>
+        Pending Appointment Requests
+      </div>
+      <ul class="list-group list-group-flush">
+        {% for apt in pending_appointments %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>{{ apt.patient.get_full_name|default:apt.patient.username }} — {{ apt.date|date:"M d" }} {{ apt.start_time|time:"H:i" }}</span>
+            <a href="{% url 'appointments:accept_reject' apt.pk %}" class="btn-respond">Respond</a>
+          </li>
+        {% empty %}
+          <li class="list-group-item text-muted text-center py-4">No pending appointment requests</li>
+        {% endfor %}
+      </ul>
+      <div class="card-footer">
+        <a href="{% url 'appointments:list' %}">
+          View All Appointments <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Our Doctors — Telemedicine{% endblock %}
+
+{% block extra_css %}
+<style>
+  .doctors-container {
+    background: linear-gradient(135deg,#09d2e822 50%);
+    min-height: calc(100vh - 70px);
+    padding: 30px 0;
+  }
+  .doctors-header {
+    color: #0a1628;
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  .doctors-header i {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+  }
+  .btn-back {
+    background: white;
+    color: #0a1628;
+    border: 1px solid #0a1628;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+  }
+  .btn-back:hover {
+    background: #0a1628;
+    color: white;
+  }
+  .filter-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(10, 22, 40, 0.08);
+    border: 1px solid rgba(10, 22, 40, 0.1);
+    margin-bottom: 30px;
+  }
+  .doctor-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(10, 22, 40, 0.08);
+    border: 1px solid rgba(10, 22, 40, 0.1);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    margin-bottom: 30px;
+  }
+  .doctor-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(10, 22, 40, 0.2);
+    border-color: #1a2a3a;
+  }
+  .doctor-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+    font-weight: 700;
+    margin: 0 auto 20px;
+    box-shadow: 0 4px 15px rgba(10, 22, 40, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+  .doctor-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .doctor-info {
+    padding: 30px;
+    text-align: center;
+  }
+  .doctor-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0a1628;
+    margin-bottom: 10px;
+  }
+  .doctor-specialization {
+    font-size: 1.1rem;
+    color: #20c997;
+    font-weight: 600;
+    margin-bottom: 15px;
+  }
+  .doctor-credentials {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin-bottom: 10px;
+  }
+  .doctor-bio {
+    color: #64748b;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    max-height: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .btn-book {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+  }
+  .btn-book:hover {
+    background: linear-gradient(135deg, #1a2a3a 0%, #0a1628 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(10, 22, 40, 0.4);
+  }
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(10, 22, 40, 0.08);
+  }
+  .empty-state i {
+    font-size: 4rem;
+    color: #cbd5e1;
+    margin-bottom: 20px;
+  }
+  .empty-state h3 {
+    color: #0a1628;
+    margin-bottom: 10px;
+  }
+  .empty-state p {
+    color: #64748b;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="doctors-container">
+  <div class="container">
+    <a href="{% url 'dashboard:home' %}" class="btn-back">
+      <i class="bi bi-arrow-left"></i> Back to Home
+    </a>
+    <h2 class="doctors-header">
+      <i class="bi bi-heart-pulse"></i>
+      Our Doctors
+    </h2>
+
+    <!-- Filter Section -->
+    <div class="filter-card">
+      <form method="get" action="">
+        <div class="row align-items-end">
+          <div class="col-md-10">
+            <label for="specialization" class="form-label">Filter by Specialization</label>
+            <select name="specialization" id="specialization" class="form-select">
+              <option value="">All Specializations</option>
+              {% for spec in specializations %}
+                <option value="{{ spec }}" {% if spec == selected_specialization %}selected{% endif %}>{{ spec }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="bi bi-funnel"></i> Filter
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Doctors Grid -->
+    {% if providers %}
+      <div class="row">
+        {% for provider in providers %}
+          <div class="col-md-6 col-lg-4">
+            <div class="doctor-card">
+              <div class="doctor-info">
+                <div class="doctor-avatar">
+                  {% if provider.user.profile_picture %}
+                    <img src="{{ provider.user.profile_picture.url }}" alt="{{ provider.user.get_full_name }}">
+                  {% else %}
+                    {{ provider.user.get_full_name|first|upper }}
+                  {% endif %}
+                </div>
+                <h3 class="doctor-name">
+                  Dr. {{ provider.user.get_full_name|default:provider.user.username }}
+                </h3>
+                <div class="doctor-specialization">
+                  <i class="bi bi-star-fill"></i> {{ provider.specialization }}
+                </div>
+                <div class="doctor-credentials">
+                  <i class="bi bi-award"></i> {{ provider.credentials }}
+                </div>
+                {% if provider.license_number %}
+                  <div class="doctor-credentials">
+                    <i class="bi bi-card-text"></i> License: {{ provider.license_number }}
+                  </div>
+                {% endif %}
+                {% if provider.bio %}
+                  <p class="doctor-bio">{{ provider.bio|truncatewords:30 }}</p>
+                {% endif %}
+                {% if user.is_authenticated and user.is_patient %}
+                  <a href="{% url 'appointments:book' %}?provider={{ provider.user.pk }}" class="btn-book">
+                    <i class="bi bi-calendar-plus"></i> Book Appointment
+                  </a>
+                {% elif not user.is_authenticated %}
+                  <a href="{% url 'accounts:login' %}?next={% url 'appointments:book' %}?provider={{ provider.user.pk }}" class="btn-book">
+                    <i class="bi bi-box-arrow-in-right"></i> Login to Book
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <i class="bi bi-search"></i>
+        <h3>No Doctors Found</h3>
+        <p>{% if selected_specialization %}No doctors found with specialization "{{ selected_specialization }}".{% else %}No doctors are currently available.{% endif %}</p>
+        {% if selected_specialization %}
+          <a href="{% url 'dashboard:doctors' %}" class="btn btn-primary mt-3">
+            <i class="bi bi-arrow-counterclockwise"></i> Clear Filter
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

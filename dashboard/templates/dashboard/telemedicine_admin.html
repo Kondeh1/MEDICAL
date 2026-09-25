@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Telemedicine Admin — Platform Administration{% endblock %}
+
+{% block content %}
+<div class="telemedicine-admin-header mb-4">
+  <h1 class="h2 mb-1"><i class="bi bi-shield-check text-primary"></i> Telemedicine Admin</h1>
+  <p class="text-muted mb-0">Platform administration — manage users, approve providers, view analytics and audit logs.</p>
+</div>
+
+<div class="row mb-4 g-3">
+  <div class="col-sm-6 col-md-3">
+    <div class="card border-primary h-100">
+      <div class="card-body text-center">
+        <h2 class="text-primary mb-0">{{ total_patients }}</h2>
+        <p class="text-muted small mb-0">Patients</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-md-3">
+    <div class="card border-primary h-100">
+      <div class="card-body text-center">
+        <h2 class="text-primary mb-0">{{ total_providers }}</h2>
+        <p class="text-muted small mb-0">Providers</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-md-3">
+    <div class="card border-primary h-100">
+      <div class="card-body text-center">
+        <h2 class="text-primary mb-0">{{ total_appointments }}</h2>
+        <p class="text-muted small mb-0">Appointments</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-md-3">
+    <div class="card border-primary h-100">
+      <div class="card-body text-center">
+        <h2 class="text-primary mb-0">{{ total_consultations }}</h2>
+        <p class="text-muted small mb-0">Consultations</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header bg-light">Appointments by status</div>
+      <ul class="list-group list-group-flush">
+        {% for row in appointments_by_status %}
+          <li class="list-group-item d-flex justify-content-between">
+            <span>{{ row.status }}</span>
+            <span class="badge bg-primary rounded-pill">{{ row.count }}</span>
+          </li>
+        {% empty %}
+          <li class="list-group-item text-muted">No data.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header bg-light">Pending provider approvals</div>
+      <ul class="list-group list-group-flush">
+        {% for prov in pending_providers %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>{{ prov.user.get_full_name|default:prov.user.username }} — {{ prov.specialization }}</span>
+            <a href="{% url 'admin:accounts_providerprofile_change' prov.pk %}" class="btn btn-sm btn-primary">Review</a>
+          </li>
+        {% empty %}
+          <li class="list-group-item text-muted">No pending approvals.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="card mt-4">
+  <div class="card-header bg-light">Admin actions</div>
+  <div class="card-body">
+    <a href="{% url 'audit_logs:list' %}" class="btn btn-outline-primary me-2"><i class="bi bi-journal-text"></i> Audit logs</a>
+    <a href="{% url 'admin:accounts_customuser_changelist' %}" class="btn btn-outline-primary me-2"><i class="bi bi-people"></i> Manage users</a>
+    <a href="{% url 'admin:accounts_providerprofile_changelist' %}" class="btn btn-outline-primary me-2"><i class="bi bi-heart-pulse"></i> Provider profiles</a>
+    <a href="{% url 'admin:index' %}" class="btn btn-outline-secondary"><i class="bi bi-gear"></i> Django admin</a>
+  </div>
+</div>
+{% endblock %}

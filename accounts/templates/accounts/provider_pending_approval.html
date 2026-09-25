@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Pending Approval — Telemedicine{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="alert alert-warning">
+      <h4><i class="bi bi-hourglass-split"></i> Account pending approval</h4>
+      <p class="mb-0">Your healthcare provider account is under review. You will be able to manage appointments and conduct consultations once an administrator approves your account.</p>
+    </div>
+    <a href="{% url 'accounts:profile' %}" class="btn btn-primary">View profile</a>
+    <a href="{% url 'accounts:logout' %}" class="btn btn-outline-secondary">Logout</a>
+  </div>
+</div>
+{% endblock %}

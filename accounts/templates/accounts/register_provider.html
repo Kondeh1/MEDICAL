@@ -1,0 +1,423 @@
+{% extends "base_auth.html" %}
+{% load static %}
+
+{% block title %}Register as Healthcare Provider — Telemedicine{% endblock %}
+
+{% block extra_css %}
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  .login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 50%, #0d1b2a 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 40px 20px;
+  }
+
+  .login-page::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('{% static "images/auth-card-bg.jpg" %}');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.3;
+  }
+
+  .login-page::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(10, 22, 40, 0.9) 0%, rgba(26, 42, 58, 0.7) 100%);
+  }
+
+  .login-container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 600px;
+  }
+
+  .login-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 40px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    animation: fadeInUp 0.8s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .login-header {
+    text-align: center;
+    margin-bottom: 25px;
+  }
+
+  .login-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #e94560 0%, #c73e54 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 2rem;
+    color: white;
+  }
+
+  .login-title {
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .login-subtitle {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+  }
+
+  .notice-box {
+    background: rgba(13, 202, 240, 0.15);
+    border: 1px solid rgba(13, 202, 240, 0.3);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .notice-box i {
+    color: #0dcaf0;
+    font-size: 1.2rem;
+    margin-top: 2px;
+  }
+
+  .notice-box span {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .section-title {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title i {
+    color: #e94560;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+
+  .form-group {
+    margin-bottom: 18px;
+  }
+
+  .form-label {
+    display: block;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .form-input, .form-textarea, .form-file {
+    width: 100%;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    outline: none;
+  }
+
+  .form-textarea {
+    border-radius: 15px;
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .form-file {
+    padding: 10px 15px;
+    border-radius: 12px;
+  }
+
+  .form-input::placeholder, .form-textarea::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .form-input:focus, .form-textarea:focus {
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+  }
+
+  .file-help {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+    margin-top: 5px;
+  }
+
+  .divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 25px 0;
+  }
+
+  .login-btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #e94560 0%, #c73e54 100%);
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+  }
+
+  .login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(233, 69, 96, 0.4);
+  }
+
+  .login-links {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .login-link {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+  }
+
+  .login-link:hover {
+    color: white;
+  }
+
+  .error-message {
+    background: rgba(233, 69, 96, 0.2);
+    border: 1px solid rgba(233, 69, 96, 0.3);
+    color: #ffb3b3;
+    padding: 10px 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    font-size: 0.85rem;
+  }
+
+  .error-list {
+    color: #ffb3b3;
+    font-size: 0.8rem;
+    margin-top: 5px;
+    padding-left: 15px;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .login-card {
+    animation: fadeInUp 0.8s ease-out, float 6s ease-in-out infinite;
+  }
+
+  @media (max-width: 576px) {
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+    .login-card {
+      padding: 25px 20px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-page">
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-icon">
+          <i class="bi bi-heart-pulse"></i>
+        </div>
+        <h1 class="login-title">Doctor Registration</h1>
+        <p class="login-subtitle">Join our network of healthcare professionals</p>
+      </div>
+
+      <div class="notice-box">
+        <i class="bi bi-info-circle-fill"></i>
+        <span>Your account will be reviewed by an administrator before you can accept appointments. Please ensure all documents are clear and valid.</span>
+      </div>
+
+      <form method="post" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+          <div class="error-message">
+            {% for error in form.non_field_errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% if form.errors %}
+          <div class="error-message">
+            <strong>Please correct the following errors:</strong>
+            <ul class="error-list">
+              {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                  <li>{{ field }}: {{ error }}</li>
+                {% endfor %}
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        <!-- Personal Information -->
+        <h3 class="section-title"><i class="bi bi-person"></i> Personal Information</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="id_first_name">First Name</label>
+            <input type="text" name="first_name" id="id_first_name" class="form-input" placeholder="First name" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="id_last_name">Last Name</label>
+            <input type="text" name="last_name" id="id_last_name" class="form-input" placeholder="Last name" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="id_username">Username</label>
+          <input type="text" name="username" id="id_username" class="form-input" placeholder="Choose a username" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="id_email">Email Address</label>
+          <input type="email" name="email" id="id_email" class="form-input" placeholder="Enter your email" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="id_password1">Password</label>
+            <input type="password" name="password1" id="id_password1" class="form-input" placeholder="Create password" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="id_password2">Confirm Password</label>
+            <input type="password" name="password2" id="id_password2" class="form-input" placeholder="Confirm password" required>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Professional Information -->
+        <h3 class="section-title"><i class="bi bi-briefcase"></i> Professional Information</h3>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="id_credentials">Credentials</label>
+            <input type="text" name="credentials" id="id_credentials" class="form-input" placeholder="e.g., MD, MBBS, DO" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="id_specialization">Specialization</label>
+            <input type="text" name="specialization" id="id_specialization" class="form-input" placeholder="e.g., Cardiology" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="id_license_number">License Number</label>
+          <input type="text" name="license_number" id="id_license_number" class="form-input" placeholder="Your medical license number">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="id_bio">Bio</label>
+          <textarea name="bio" id="id_bio" class="form-textarea" placeholder="Tell us about your experience and expertise..."></textarea>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Documents -->
+        <h3 class="section-title"><i class="bi bi-file-earmark-medical"></i> Required Documents</h3>
+
+        <div class="form-group">
+          <label class="form-label" for="id_professional_licence">Professional Licence</label>
+          <input type="file" name="professional_licence" id="id_professional_licence" class="form-file" accept="application/pdf,image/*" required>
+          <p class="file-help">Proof of registration with Medical or Pharmacy Council (PDF or image)</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="id_academic_certificates">Academic Certificates</label>
+          <input type="file" name="academic_certificates" id="id_academic_certificates" class="form-file" accept="application/pdf,image/*" required>
+          <p class="file-help">Academic qualifications and certificates (PDF or image)</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="id_identification_documents">Identification Documents</label>
+          <input type="file" name="identification_documents" id="id_identification_documents" class="form-file" accept="application/pdf,image/*" required>
+          <p class="file-help">ID card, passport, or government-issued identification (PDF or image)</p>
+        </div>
+
+        <button type="submit" class="login-btn">SUBMIT REGISTRATION</button>
+
+        <div class="login-links">
+          <span style="color: rgba(255,255,255,0.6);">Already have an account? </span>
+          <a href="{% url 'accounts:login' %}" class="login-link">Sign In</a>
+        </div>
+      </form>
+
+      <div style="text-align: center; margin-top: 15px;">
+        <a href="{% url 'accounts:register_patient' %}" class="login-link">
+          <i class="bi bi-person"></i> Register as Patient instead
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

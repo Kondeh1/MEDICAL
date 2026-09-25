@@ -1,0 +1,310 @@
+{% extends "base.html" %}
+
+{% block title %}Prescription — Telemedicine{% endblock %}
+
+{% block extra_css %}
+<style>
+  .prescription-container {
+    background: linear-gradient(135deg,#09d2e822 50%);
+    min-height: calc(100vh - 70px);
+    padding: 30px 0;
+  }
+  .prescription-header {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 50%, #0d1b2a 100%);
+    color: white;
+    padding: 40px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 15px 40px rgba(10, 22, 40, 0.25);
+    position: relative;
+    overflow: hidden;
+  }
+  .prescription-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255,193,7,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .prescription-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .prescription-header-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #ffc107 0%, #ffdb4d 100%);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0a1628;
+    font-size: 2rem;
+    box-shadow: 0 8px 20px rgba(255, 193, 7, 0.3);
+  }
+  .prescription-header h2 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 2.2rem;
+  }
+  .info-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(10, 22, 40, 0.08);
+    border: 1px solid rgba(10, 22, 40, 0.1);
+    margin-bottom: 25px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(10, 22, 40, 0.15);
+    border-color: #ffc107;
+  }
+  .info-card .card-body {
+    padding: 30px;
+  }
+  .info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .info-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+  .info-icon {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, #ffc107 0%, #ffdb4d 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0a1628;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+  .info-content {
+    flex: 1;
+  }
+  .info-label {
+    font-size: 0.85rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+  .info-value {
+    font-size: 1.1rem;
+    color: #0a1628;
+    font-weight: 600;
+  }
+  .medications-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(10, 22, 40, 0.08);
+    border: 1px solid rgba(10, 22, 40, 0.1);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .medications-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(10, 22, 40, 0.15);
+    border-color: #ffc107;
+  }
+  .medications-header {
+    background: linear-gradient(135deg, #ffc107 0%, #ffdb4d 100%);
+    color: #0a1628;
+    padding: 20px 30px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .medication-item {
+    padding: 25px 30px;
+    border-bottom: 1px solid #f1f5f9;
+    transition: background 0.3s ease;
+  }
+  .medication-item:last-child {
+    border-bottom: none;
+  }
+  .medication-item:hover {
+    background: #fefce8;
+  }
+  .medication-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #0a1628;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .medication-name i {
+    color: #ffc107;
+  }
+  .medication-detail {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    color: #475569;
+    font-size: 0.95rem;
+  }
+  .medication-detail i {
+    color: #ffc107;
+    font-size: 1rem;
+  }
+  .medication-detail strong {
+    color: #0a1628;
+  }
+  .btn-back {
+    background: white;
+    color: #0a1628;
+    border: 2px solid #ffc107;
+    padding: 12px 25px;
+    border-radius: 10px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    margin-top: 25px;
+  }
+  .btn-back:hover {
+    background: #ffc107;
+    color: #0a1628;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="prescription-container">
+  <div class="container">
+    <!-- Back Button -->
+    <a href="{% url 'prescriptions:list' %}" class="btn-back mb-4">
+      <i class="bi bi-arrow-left"></i> Back to Prescriptions
+    </a>
+
+    <!-- Header -->
+    <div class="prescription-header">
+      <div class="prescription-header-content">
+        <div class="prescription-header-icon">
+          <i class="bi bi-prescription2"></i>
+        </div>
+        <div>
+          <h2>Prescription #{{ prescription.pk }}</h2>
+          <p style="margin: 5px 0 0 0; opacity: 0.8;">Issued on {{ prescription.created_at|date:"F d, Y" }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Download Buttons -->
+    <div class="text-center mb-4">
+      <a href="{% url 'prescriptions:download' prescription.pk 'pdf' %}" class="btn btn-primary me-2" style="background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%); border: none; padding: 12px 25px; border-radius: 10px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+        <i class="bi bi-file-earmark-pdf"></i> Download PDF
+      </a>
+      <a href="{% url 'prescriptions:download' prescription.pk 'docx' %}" class="btn btn-success" style="background: linear-gradient(135deg, #198754 0%, #157347 100%); border: none; padding: 12px 25px; border-radius: 10px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+        <i class="bi bi-file-earmark-word"></i> Download DOCX
+      </a>
+    </div>
+
+    <!-- Prescription Info -->
+    <div class="info-card">
+      <div class="card-body">
+        <div class="info-item">
+          <div class="info-icon">
+            <i class="bi bi-person"></i>
+          </div>
+          <div class="info-content">
+            <div class="info-label">Patient</div>
+            <div class="info-value">{{ prescription.patient.get_full_name|default:prescription.patient.username }}</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">
+            <i class="bi bi-person-badge"></i>
+          </div>
+          <div class="info-content">
+            <div class="info-label">Provider</div>
+            <div class="info-value">{{ prescription.provider.get_full_name|default:prescription.provider.username }}</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">
+            <i class="bi bi-calendar3"></i>
+          </div>
+          <div class="info-content">
+            <div class="info-label">Date Issued</div>
+            <div class="info-value">{{ prescription.created_at|date:"M d, Y" }}</div>
+          </div>
+        </div>
+        {% if prescription.notes %}
+        <div class="info-item">
+          <div class="info-icon">
+            <i class="bi bi-journal-text"></i>
+          </div>
+          <div class="info-content">
+            <div class="info-label">Notes</div>
+            <div class="info-value">{{ prescription.notes }}</div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Medications -->
+    <div class="medications-card">
+      <div class="medications-header">
+        <i class="bi bi-capsule"></i> Medications
+      </div>
+      {% for item in prescription.items.all %}
+        <div class="medication-item">
+          <div class="medication-name">
+            <i class="bi bi-capsule-pill"></i> {{ item.medication_name }} — {{ item.dosage }}
+          </div>
+          {% if item.frequency %}
+          <div class="medication-detail">
+            <i class="bi bi-clock"></i>
+            <strong>Frequency:</strong> {{ item.frequency }}
+          </div>
+          {% endif %}
+          {% if item.duration %}
+          <div class="medication-detail">
+            <i class="bi bi-hourglass-split"></i>
+            <strong>Duration:</strong> {{ item.duration }}
+          </div>
+          {% endif %}
+          {% if item.instructions %}
+          <div class="medication-detail">
+            <i class="bi bi-info-circle"></i>
+            <strong>Instructions:</strong> {{ item.instructions }}
+          </div>
+          {% endif %}
+        </div>
+      {% empty %}
+        <div class="medication-item text-center text-muted">
+          <i class="bi bi-inbox" style="font-size: 2rem; color: #cbd5e1;"></i>
+          <p class="mt-2">No medications listed</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

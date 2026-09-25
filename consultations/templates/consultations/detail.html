@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Consultation — Telemedicine{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-journal-medical"></i> Consultation</h2>
+
+<div class="card">
+  <div class="card-body">
+    <p><strong>Appointment:</strong> {{ consultation.appointment.date|date:"M d, Y" }} {{ consultation.appointment.start_time|time:"H:i" }}</p>
+    <p><strong>Patient:</strong> {{ consultation.appointment.patient.get_full_name|default:consultation.appointment.patient.username }}</p>
+    <p><strong>Provider:</strong> {{ consultation.appointment.provider.get_full_name|default:consultation.appointment.provider.username }}</p>
+    <p><strong>Status:</strong> {{ consultation.get_status_display }}</p>
+    <p><strong>Started:</strong> {{ consultation.started_at|date:"M d, Y H:i" }}</p>
+    {% if consultation.ended_at %}<p><strong>Ended:</strong> {{ consultation.ended_at|date:"M d, Y H:i" }}</p>{% endif %}
+    {% if consultation.notes %}<p><strong>Notes:</strong><br>{{ consultation.notes|linebreaks }}</p>{% endif %}
+    {% if consultation.status == 'ACTIVE' %}
+      <a href="{% url 'consultations:room' consultation.appointment_id %}" class="btn btn-primary">Enter consultation room</a>
+    {% endif %}
+    <a href="{% url 'consultations:list' %}" class="btn btn-outline-secondary">Back to list</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Telemedical Consultation Platform{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <style>
+    /* Top Bar - Contact & Social */
+    .top-bar {
+      background: #0a1628;
+      padding: 8px 0;
+      font-size: 0.85rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .top-bar-contact {
+      color: rgba(255,255,255,0.8);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    
+    .top-bar-contact a {
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    
+    .top-bar-contact a:hover {
+      color: white;
+    }
+    
+    .top-bar-contact i {
+      margin-right: 5px;
+      color: #18dae4;
+    }
+    
+    .top-bar-social {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .top-bar-social a {
+      color: rgba(255,255,255,0.8);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .top-bar-social a:hover {
+      color: #18dae4;
+      transform: translateY(-2px);
+    }
+
+    /* Blue-black navbar */
+    .navbar-custom {
+      background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 50%, #0d1b2a 100%) !important;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1030;
+    }
+    
+    /* Two-row navbar layout */
+    .navbar-custom.two-row {
+      top: 40px;
+    }
+
+    /* Add padding to body to account for fixed navbar */
+    body {
+      padding-top: 110px;
+    }
+
+    .navbar-custom .navbar-brand {
+      color: white !important;
+      font-weight: 600;
+      font-size: 1.5rem;
+    }
+    
+    .navbar-custom .navbar-brand i {
+      color: #18dae4;
+      margin-right: 8px;
+    }
+
+    .navbar-custom .nav-link {
+      color: rgba(255,255,255,0.85) !important;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+      padding: 10px 15px !important;
+    }
+
+    .navbar-custom .nav-link:hover {
+      color: #18dae4 !important;
+    }
+    
+    .navbar-custom .nav-link.active {
+      color: #18dae4 !important;
+    }
+
+    /* Login and Register buttons - Right Corner Style */
+    .nav-btn {
+      padding: 10px 25px !important;
+      border-radius: 8px;
+      margin: 0 5px;
+      font-weight: 600;
+      transition: all 0.3s ease !important;
+      border: 2px solid transparent;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-btn-login {
+      background: transparent;
+      border-color: white;
+      color: white !important;
+    }
+
+    .nav-btn-login:hover {
+      background: white;
+      color: #0a1628 !important;
+    }
+
+    .nav-btn-register {
+      background: linear-gradient(135deg, #18dae4 0%, #20c997 100%);
+      border-color: transparent;
+      color: white !important;
+    }
+
+    .nav-btn-register:hover {
+      background: linear-gradient(135deg, #20c997 0%, #18dae4 100%);
+      color: white !important;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(32, 201, 151, 0.4);
+    }
+
+    /* Navbar profile image */
+    .nav-profile-img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(255,255,255,0.5);
+    }
+    .nav-avatar-placeholder {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ffc107 0%, #ffdb4d 100%);
+      color: #0a1628;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: 2px solid rgba(255,255,255,0.5);
+    }
+
+    /* Sidebar styles */
+    .sidebar-toggle {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 5px 10px;
+      margin-right: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar-toggle:hover {
+      color: #e94560;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -300px;
+      width: 300px;
+      height: 100vh;
+      background: linear-gradient(180deg, #0a1628 0%, #1a2a3a 100%);
+      z-index: 1050;
+      transition: left 0.3s ease;
+      overflow-y: auto;
+      box-shadow: 2px 0 20px rgba(0,0,0,0.3);
+    }
+
+    .sidebar.active {
+      left: 0;
+    }
+    
+    /* Static sidebar for dashboard pages */
+    body.patient-dashboard .sidebar,
+    body.provider-dashboard .sidebar,
+    body.admin-dashboard .sidebar {
+      left: 0 !important;
+    }
+    
+    /* Adjust body padding when sidebar is static */
+    body.patient-dashboard,
+    body.provider-dashboard,
+    body.admin-dashboard {
+      padding-left: 300px;
+    }
+    
+    /* Adjust navbar and top positioning */
+    body.patient-dashboard .navbar-custom,
+    body.provider-dashboard .navbar-custom,
+    body.admin-dashboard .navbar-custom {
+      left: 300px;
+      width: calc(100% - 300px);
+    }
+    
+    /* Adjust main content */
+    body.patient-dashboard main.container,
+    body.provider-dashboard main.container,
+    body.admin-dashboard main.container {
+      margin-left: 0;
+    }
+    
+    /* Hide sidebar overlay on dashboard pages */
+    body.patient-dashboard .sidebar-overlay,
+    body.provider-dashboard .sidebar-overlay,
+    body.admin-dashboard .sidebar-overlay {
+      display: none;
+    }
+    
+    /* Adjust top bar positioning */
+    body.patient-dashboard .top-bar,
+    body.provider-dashboard .top-bar,
+    body.admin-dashboard .top-bar {
+      left: 300px;
+      width: calc(100% - 300px);
+    }
+    
+    /* Adjust body padding to account for fixed navbar when sidebar is static */
+    body.patient-dashboard,
+    body.provider-dashboard,
+    body.admin-dashboard {
+      padding-top: 110px; /* Maintain original padding */
+    }
+
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1040;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .sidebar-header {
+      padding: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sidebar-brand {
+      color: white;
+      font-size: 1.3rem;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .sidebar-close {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    .sidebar-close:hover {
+      color: #e94560;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar-item {
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      padding: 15px 20px;
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      transition: all 0.3s ease;
+      
+    }
+
+    .sidebar-link:hover {
+      background: rgba(3, 91, 113, 0.959);
+      color: white;
+      padding-left: 25px;
+    }
+
+    .sidebar-link i {
+      margin-right: 12px;
+      font-size: 1.2rem;
+      width: 25px;
+    }
+
+    .sidebar-section-title {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 20px 20px 10px;
+      margin: 0;
+    }
+
+    body.sidebar-open {
+      overflow: hidden;
+    }
+    .btn-purple {
+      background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);
+      border: none;
+      color: white;
+    }
+    
+    .btn-purple:hover {
+      background: linear-gradient(135deg, #5a32a3 0%, #482a80 100%);
+      color: white;
+    }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+<body class="d-flex flex-column min-vh-100">
+  <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <a href="{% url 'dashboard:home' %}" class="sidebar-brand">
+        <i class="bi bi-heart-pulse"></i> Telemedicine
+      </a>
+      <button class="sidebar-close" onclick="toggleSidebar()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <ul class="sidebar-menu">
+      <li class="sidebar-item">
+        <a href="{% url 'dashboard:home' %}" class="sidebar-link" >
+          <i class="bi bi-house"></i> Home
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a href="{% url 'dashboard:about' %}" class="sidebar-link">
+          <i class="bi bi-info-circle"></i> About
+        </a>
+      </li>
+
+      {% if user.is_authenticated %}
+        <li class="sidebar-section-title">Main Menu</li>
+        <li class="sidebar-item">
+          <a href="{% url 'accounts:profile' %}" class="sidebar-link">
+            <i class="bi bi-person"></i> Profile
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a href="{% url 'appointments:list' %}" class="sidebar-link">
+            <i class="bi bi-calendar-check"></i> Appointments
+          </a>
+        </li>
+        {% if request.resolver_match.url_name != 'patient_dashboard' and request.resolver_match.url_name != 'provider_dashboard' and request.resolver_match.url_name != 'admin_dashboard' and request.resolver_match.app_name != 'appointments' and request.resolver_match.app_name != 'consultations' and request.resolver_match.app_name != 'medical_records' and request.resolver_match.app_name != 'prescriptions' and request.resolver_match.app_name != 'messaging' and request.resolver_match.url_name != 'manage_users' and request.resolver_match.url_name != 'user_activate' and request.resolver_match.url_name != 'user_deactivate' and request.resolver_match.url_name != 'user_delete' and request.resolver_match.url_name != 'provider_application_detail' and request.resolver_match.url_name != 'provider_credentials_detail' and request.resolver_match.url_name != 'approve_provider' and request.resolver_match.url_name != 'reject_provider' and request.resolver_match.url_name != 'providers' %}
+        <li class="sidebar-item">
+          <a href="{% url 'messaging:inbox' %}" class="sidebar-link">
+            <i class="bi bi-chat-dots"></i> Messages
+          </a>
+        </li>
+        {% endif %}
+        <li class="sidebar-item">
+          <a href="{% url 'consultations:dashboard' %}" class="sidebar-link">
+            <i class="bi bi-camera-video"></i> Consultation Dashboard
+          </a>
+        </li>
+
+        {% if user.is_provider %}
+          <li class="sidebar-section-title">Provider</li>
+          <li class="sidebar-item">
+            <a href="{% url 'appointments:provider_schedule' %}" class="sidebar-link">
+              <i class="bi bi-clock"></i> My Schedule
+            </a>
+          </li>
+        {% endif %}
+
+        {% if user.is_administrator %}
+          <li class="sidebar-section-title">Administration</li>
+          <li class="sidebar-item">
+            <a href="{% url 'dashboard:admin_dashboard' %}" class="sidebar-link">
+              <i class="bi bi-shield-check"></i> Admin Dashboard
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="{% url 'audit_logs:list' %}" class="sidebar-link">
+              <i class="bi bi-journal-text"></i> Audit Logs
+            </a>
+          </li>
+        {% endif %}
+
+        <li class="sidebar-section-title">Account</li>
+        <li class="sidebar-item">
+          <a href="{% url 'accounts:password_change' %}" class="sidebar-link">
+            <i class="bi bi-key"></i> Change Password
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <form method="post" action="{% url 'accounts:logout' %}" class="d-inline w-100">
+            {% csrf_token %}
+            <button type="submit" class="sidebar-link border-0 bg-transparent w-100 text-start">
+              <i class="bi bi-box-arrow-right"></i> Logout
+            </button>
+          </form>
+        </li>
+      {% else %}
+        <li class="sidebar-section-title">Account</li>
+        <li class="sidebar-item">
+          <a href="{% url 'accounts:login' %}" class="sidebar-link">
+            <i class="bi bi-box-arrow-in-right"></i> Login
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a href="{% url 'accounts:register_patient' %}" class="sidebar-link">
+            <i class="bi bi-person-plus"></i> Register as Patient
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a href="{% url 'accounts:register_provider' %}" class="sidebar-link" >
+            <i class="bi bi-heart-pulse"></i> Register as Provider
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+  </aside>
+
+  <!-- Top Bar - Contact & Social -->
+  <div class="top-bar fixed-top">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <div class="top-bar-contact">
+            <a href="tel:+23273638909"><i class="bi bi-telephone-fill"></i> +232 73 638 909</a>
+            <a href="mailto:support@telemedicine.com"><i class="bi bi-envelope-fill"></i> support@telemedicine.com</a>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="top-bar-social justify-content-md-end">
+            <a href="https://facebook.com/telemedicine" target="_blank" title="Facebook"><i class="bi bi-facebook"></i></a>
+            <a href="https://instagram.com/telemedicine" target="_blank" title="Instagram"><i class="bi bi-instagram"></i></a>
+            <a href="https://wa.me/23273638909" target="_blank" title="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+            <a href="mailto:support@telemedicine.com" title="Email"><i class="bi bi-envelope-fill"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark navbar-custom two-row">
+    <div class="container">
+      <div class="d-flex align-items-center">
+        <button class="sidebar-toggle" onclick="toggleSidebar()">
+          <i class="bi bi-list"></i>
+        </button>
+        <a class="navbar-brand" href="{% url 'dashboard:home' %}">
+          <i class="bi bi-heart-pulse"></i> TELEMEDICAL
+        </a>
+      </div>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <!-- Center Navigation Links - Hidden on dashboards -->
+        {% if request.resolver_match.url_name != 'patient_dashboard' and request.resolver_match.url_name != 'provider_dashboard' and request.resolver_match.url_name != 'admin_dashboard' and request.resolver_match.app_name != 'appointments' and request.resolver_match.app_name != 'consultations' and request.resolver_match.app_name != 'medical_records' and request.resolver_match.app_name != 'prescriptions' and request.resolver_match.app_name != 'messaging' and request.resolver_match.url_name != 'manage_users' and request.resolver_match.url_name != 'user_activate' and request.resolver_match.url_name != 'user_deactivate' and request.resolver_match.url_name != 'user_delete' and request.resolver_match.url_name != 'provider_application_detail' and request.resolver_match.url_name != 'provider_credentials_detail' and request.resolver_match.url_name != 'approve_provider' and request.resolver_match.url_name != 'reject_provider' and request.resolver_match.url_name != 'providers' %}
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'dashboard:home' %}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'dashboard:about' %}">About</a>
+          </li>
+          <li class="nav-item">
+            <!-- <a class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}" href="{% url 'accounts:login' %}">Services</a> -->
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'doctors' %}active{% endif %}" href="{% url 'dashboard:doctors' %}">Doctors</a>
+          </li>
+          <li class="nav-item">
+            <!-- <a class="nav-link" href="{% url 'dashboard:about' %}">Blog</a> -->
+          </li>
+          <li class="nav-item">
+            <!-- <a class="nav-link" href="{% url 'dashboard:home' %}">Shop</a> -->
+          </li>
+          {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.app_name == 'consultations' %}active{% endif %}" href="{% url 'consultations:dashboard' %}">Consultation Dashboard</a>
+          </li>
+          {% if request.resolver_match.url_name != 'patient_dashboard' and request.resolver_match.url_name != 'provider_dashboard' and request.resolver_match.url_name != 'admin_dashboard' and request.resolver_match.app_name != 'appointments' and request.resolver_match.app_name != 'consultations' and request.resolver_match.app_name != 'medical_records' and request.resolver_match.app_name != 'prescriptions' and request.resolver_match.app_name != 'messaging' and request.resolver_match.url_name != 'manage_users' and request.resolver_match.url_name != 'user_activate' and request.resolver_match.url_name != 'user_deactivate' and request.resolver_match.url_name != 'user_delete' and request.resolver_match.url_name != 'provider_application_detail' and request.resolver_match.url_name != 'provider_credentials_detail' and request.resolver_match.url_name != 'approve_provider' and request.resolver_match.url_name != 'reject_provider' and request.resolver_match.url_name != 'providers' %}
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.app_name == 'messaging' %}active{% endif %}" href="{% url 'messaging:inbox' %}">Messages</a>
+          </li>
+          {% endif %}
+          {% endif %}
+        </ul>
+        {% endif %}
+        
+        <!-- Right Side - User Profile -->
+        <ul class="navbar-nav ms-auto align-items-center">
+          {% if user.is_authenticated %}
+            <!-- Notifications Dropdown -->
+            <li class="nav-item dropdown me-3">
+              <a class="nav-link position-relative" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-bell" style="font-size: 1.3rem;"></i>
+                <span id="notification-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.7rem; display: none;">0</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" style="min-width: 380px; max-height: 450px; overflow-y: auto;">
+                <li class="dropdown-header d-flex justify-content-between align-items-center">
+                  <span><i class="bi bi-bell"></i> Notifications</span>
+                  <button class="btn btn-sm btn-link" onclick="clearNotifications()" style="color: #6c757d;">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li id="notification-list">
+                  <div class="text-center py-4 text-muted">
+                    <i class="bi bi-bell-slash" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <p class="mb-0">No new notifications</p>
+                    <small class="text-muted">You're all caught up!</small>
+                  </div>
+                </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" data-bs-toggle="dropdown">
+                {% if user.profile_picture %}
+                  <img src="{{ user.profile_picture.url }}" alt="{{ user.username }}" class="nav-profile-img">
+                {% else %}
+                  <div class="nav-avatar-placeholder">{{ user.username|first|upper }}</div>
+                {% endif %}
+                <span>{{ user.get_full_name|default:user.username }}</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="bi bi-person"></i> Profile</a></li>
+                <li><a class="dropdown-item" href="{% url 'accounts:password_change' %}"><i class="bi bi-key"></i> Change password</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="dropdown-item text-danger border-0 bg-transparent w-100 text-start"><i class="bi bi-box-arrow-right"></i> Logout</button>
+                  </form>
+                </li>
+              </ul>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link nav-btn nav-btn-login" href="{% url 'accounts:login' %}">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link nav-btn nav-btn-register" href="{% url 'accounts:register_patient' %}">Register</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container flex-grow-1 py-4">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+
+  {% if request.resolver_match.url_name == 'about' or request.resolver_match.url_name == 'home' %}
+  <footer class="footer-custom py-4 mt-auto">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <h5 class="footer-title"><i class="bi bi-heart-pulse"></i> Telemedicine</h5>
+          <p class="footer-text">Secure remote consultations with licensed healthcare providers.</p>
+        </div>
+        <div class="col-md-4 mb-3">
+          <h5 class="footer-title">Quick Links</h5>
+          <ul class="footer-links">
+            <li><a href="{% url 'dashboard:home' %}">Home</a></li>
+            <li><a href="{% url 'dashboard:about' %}">About</a></li>
+            <li><a href="{% url 'accounts:login' %}">Login</a></li>
+            <li><a href="{% url 'accounts:register_patient' %}">Register</a></li>
+          </ul>
+        </div>
+        <div class="col-md-4 mb-3">
+          <h5 class="footer-title">Contact</h5>
+          <p class="footer-text">
+            <i class="bi bi-envelope"></i> support@telemedicine.com<br>
+            <i class="bi bi-telephone"></i> +23273638909
+          </p>
+          <div class="social-links">
+            <a href="https://facebook.com/telemedicine" target="_blank" class="social-link" title="Facebook">
+              <i class="bi bi-facebook"></i>
+            </a>
+            <a href="https://instagram.com/telemedicine" target="_blank" class="social-link" title="Instagram">
+              <i class="bi bi-instagram"></i>
+            </a>
+            <a href="https://wa.me/23273638909" target="_blank" class="social-link" title="WhatsApp">
+              <i class="bi bi-whatsapp"></i>
+            </a>
+            <a href="mailto:support@telemedicine.com" class="social-link" title="Email">
+              <i class="bi bi-envelope-fill"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      <hr class="footer-divider">
+      <div class="text-center footer-bottom">
+        &copy; {% now "Y" %} Telemedical Consultation Platform. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <style>
+    .footer-custom {
+      background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 50%, #0d1b2a 100%);
+      color: rgba(255, 255, 255, 0.8);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-title {
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    .footer-text {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .footer-links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .footer-links li {
+      margin-bottom: 8px;
+    }
+
+    .footer-links a {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.3s ease;
+    }
+
+    .footer-links a:hover {
+      color: white;
+    }
+
+    .footer-divider {
+      border-color: rgba(255, 255, 255, 0.1);
+      margin: 20px 0;
+    }
+
+    .footer-bottom {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.85rem;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    .social-link {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .social-link:hover {
+      background: #3b82f6;
+      color: white;
+      border-color: #3b82f6;
+      transform: translateY(-3px);
+    }
+  </style>
+  {% endif %}
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Incoming Call Popup Modal -->
+  <div class="modal fade" id="incomingCallModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="border: none; border-radius: 20px; overflow: hidden;">
+        <div class="modal-body p-0">
+          <div style="background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%); padding: 30px; text-align: center; color: white;">
+            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #20c0c9 0%, #20c997 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 2rem; animation: pulse 1.5s infinite;">
+              <i class="bi bi-telephone-inbound-fill call-ringing"></i>
+            </div>
+            <h4 style="margin-bottom: 10px;">Incoming Call!</h4>
+            <p style="opacity: 0.8; margin-bottom: 5px;">You're receiving a call</p>
+            <h5 id="incomingCallUser" style="color: #20c997; margin-top: 15px;"></h5>
+            <p id="incomingCallType" style="font-size: 0.9rem; opacity: 0.7;"></p>
+          </div>
+          <div style="padding: 25px; background: white;">
+            <div style="display: flex; gap: 15px;">
+              <button type="button" class="btn btn-lg flex-fill" id="acceptCallBtn" style="background: linear-gradient(135deg, #20c0c9 0%, #20c997 100%); color: white; border: none; border-radius: 12px; padding: 15px;">
+                <i class="bi bi-telephone-fill"></i> Accept
+              </button>
+              <button type="button" class="btn btn-lg flex-fill" id="declineCallBtn" data-bs-dismiss="modal" style="background: #f1f5f9; color: #64748b; border: none; border-radius: 12px; padding: 15px;">
+                <i class="bi bi-telephone-x"></i> Decline
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <style>
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(32, 201, 151, 0.7); }
+      50% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(32, 201, 151, 0); }
+    }
+    
+    /* Ringing animation for call popup */
+    .call-ringing {
+      animation: ringing 0.5s infinite alternate;
+    }
+    
+    @keyframes ringing {
+      from { transform: rotate(-5deg); }
+      to { transform: rotate(5deg); }
+    }
+  </style>
+  
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      const body = document.body;
+
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+      body.classList.toggle('sidebar-open');
+    }
+    
+    // Real-time WebSocket Connection for Call Notifications
+    let websocket = null;
+    let currentIncomingCall = null;
+    let callCheckInterval = null;
+    
+    // Initialize WebSocket connection
+    function initWebSocket() {
+      const wsScheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
+      const wsUrl = `${wsScheme}://${window.location.host}/ws/call/notifications/`;
+      
+      try {
+        websocket = new WebSocket(wsUrl);
+        
+        websocket.onopen = function(event) {
+          console.log('WebSocket connected for call notifications');
+        };
+        
+        websocket.onmessage = function(event) {
+          const data = JSON.parse(event.data);
+          console.log('WebSocket message received:', data.type);
+          console.log('Full message data:', data);
+          
+          switch(data.type) {
+            case 'incoming_call':
+              showIncomingCallPopup(data);
+              playRingingSound();
+              break;
+            
+            case 'call_status_update':
+              handleCallStatusUpdate(data);
+              break;
+            
+            case 'call_declined':
+              // Handle direct call decline messages
+              const declineDiv = document.createElement('div');
+              declineDiv.className = 'alert alert-warning position-fixed top-0 end-0 m-3';
+              declineDiv.style.zIndex = '9999';
+              declineDiv.innerHTML = `<i class="bi bi-telephone-x"></i> ${data.message || 'Call was declined'}`;
+              document.body.appendChild(declineDiv);
+              setTimeout(() => {
+                document.body.removeChild(declineDiv);
+              }, 5000);
+              
+              // Close any active call popup
+              const modal = document.getElementById('incomingCallModal');
+              if (modal && modal.classList.contains('show')) {
+                const bsModal = bootstrap.Modal.getInstance(modal);
+                bsModal.hide();
+              }
+              stopRingingSound();
+              break;
+            
+            case 'call_ended':
+              // Handle call completely ended
+              const endDiv = document.createElement('div');
+              endDiv.className = 'alert alert-info position-fixed top-0 end-0 m-3';
+              endDiv.style.zIndex = '9999';
+              endDiv.innerHTML = `<i class="bi bi-telephone-x"></i> ${data.message || 'Call ended'}`;
+              document.body.appendChild(endDiv);
+              setTimeout(() => {
+                document.body.removeChild(endDiv);
+              }, 5000);
+              
+              // Close any active call popup
+              const modal2 = document.getElementById('incomingCallModal');
+              if (modal2 && modal2.classList.contains('show')) {
+                const bsModal = bootstrap.Modal.getInstance(modal2);
+                bsModal.hide();
+              }
+              stopRingingSound();
+              
+              // If user is on a call page, redirect them
+              if (window.location.pathname.includes('/call/')) {
+                setTimeout(() => {
+                  window.location.href = '/messages/';
+                }, 3000);
+              }
+              break;
+          }
+        };
+        
+        websocket.onclose = function(event) {
+          console.log('WebSocket disconnected');
+          // Try to reconnect after 5 seconds
+          setTimeout(initWebSocket, 5000);
+        };
+        
+        websocket.onerror = function(error) {
+          console.error('WebSocket error:', error);
+        };
+      } catch (error) {
+        console.error('Failed to initialize WebSocket:', error);
+      }
+    }
+    
+    function showIncomingCallPopup(callData) {
+      currentIncomingCall = callData;
+      
+      // Update popup content
+      document.getElementById('incomingCallUser').textContent = callData.caller_name;
+      document.getElementById('incomingCallType').textContent = callData.call_type === 'VIDEO' ? 'Video Call' : 'Audio Call';
+      
+      // Set up button handlers
+      document.getElementById('acceptCallBtn').onclick = function() {
+        acceptIncomingCall(callData);
+      };
+      
+      document.getElementById('declineCallBtn').onclick = function() {
+        declineIncomingCall(callData);
+        stopRingingSound();
+      };
+      
+      // Show modal
+      const modal = new bootstrap.Modal(document.getElementById('incomingCallModal'));
+      modal.show();
+    }
+    
+    function acceptIncomingCall(callData) {
+      // Stop ringing sound
+      stopRingingSound();
+      
+      // Close modal
+      const modal = bootstrap.Modal.getInstance(document.getElementById('incomingCallModal'));
+      modal.hide();
+      
+      // Redirect to the appropriate call room/page
+      const redirectUrl = callData.redirect_url || `/messages/call/${callData.room_id}/`;
+      
+      // Avoid reloading the consultation room page (reload triggers `beforeunload`
+      // which calls `endCall()`, causing the call to end for both participants).
+      try {
+        if (redirectUrl.startsWith('/consultations/room/')) {
+          const targetId = redirectUrl.split('/').filter(Boolean).pop();
+          const currentPath = window.location.pathname;
+          if (currentPath.startsWith('/consultations/room/')) {
+            const currentId = currentPath.split('/').filter(Boolean).pop();
+            if (targetId && currentId && targetId === currentId) {
+              const acceptBtn = document.getElementById('acceptCallBtn');
+              if (acceptBtn) acceptBtn.click();
+              return;
+            }
+          }
+        }
+      } catch (e) {
+        // If anything goes wrong, fall back to redirect.
+      }
+      
+      window.location.href = redirectUrl;
+    }
+    
+    function declineIncomingCall(callData) {
+      // Consultation calls may not have a Call model id, so we may not be able to hit the decline endpoint.
+      if (!callData.call_id) {
+        const modal = bootstrap.Modal.getInstance(document.getElementById('incomingCallModal'));
+        if (modal) modal.hide();
+        return;
+      }
+      // Send decline notification to caller via AJAX
+      fetch(`/messages/call/${callData.call_id}/decline/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken'),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          'action': 'decline'
+        })
+      })
+      .then(response => {
+        if (response.ok) {
+          console.log('Call declined successfully');
+          // Show confirmation to user
+          const modal = bootstrap.Modal.getInstance(document.getElementById('incomingCallModal'));
+          if (modal) {
+            modal.hide();
+          }
+          // Show temporary confirmation
+          const confirmDiv = document.createElement('div');
+          confirmDiv.className = 'alert alert-info position-fixed top-0 end-0 m-3';
+          confirmDiv.style.zIndex = '9999';
+          confirmDiv.innerHTML = `<i class="bi bi-check-circle"></i> Call declined`;
+          document.body.appendChild(confirmDiv);
+          setTimeout(() => {
+            document.body.removeChild(confirmDiv);
+          }, 3000);
+        } else {
+          console.error('Failed to decline call:', response.status);
+          alert('Failed to decline call. Please try again.');
+        }
+      })
+      .catch(error => {
+        console.error('Error declining call:', error);
+        alert('Network error while declining call. Please try again.');
+      });
+    }
+    
+    function handleCallStatusUpdate(data) {
+      // Handle call status updates (e.g., call ended, missed, declined, etc.)
+      console.log('Call status update:', data);
+      
+      // Handle different call statuses
+      if (data.status === 'DECLINED') {
+        // Show declined notification to caller
+        const declineDiv = document.createElement('div');
+        declineDiv.className = 'alert alert-warning position-fixed top-0 end-0 m-3';
+        declineDiv.style.zIndex = '9999';
+        declineDiv.innerHTML = `<i class="bi bi-telephone-x"></i> ${data.message || 'Call was declined'}`;
+        document.body.appendChild(declineDiv);
+        setTimeout(() => {
+          document.body.removeChild(declineDiv);
+        }, 5000);
+        
+        // Close any active call popup
+        const modal = document.getElementById('incomingCallModal');
+        if (modal && modal.classList.contains('show')) {
+          const bsModal = bootstrap.Modal.getInstance(modal);
+          bsModal.hide();
+        }
+        stopRingingSound();
+        
+      } else if (data.status === 'ENDED' || data.status === 'MISSED') {
+        const modal = document.getElementById('incomingCallModal');
+        if (modal.classList.contains('show')) {
+          const bsModal = bootstrap.Modal.getInstance(modal);
+          bsModal.hide();
+        }
+        stopRingingSound();
+      }
+    }
+    
+    function playRingingSound() {
+      // Create a simple beep sound
+      try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.5);
+        
+        // Repeat for ringing effect
+        setTimeout(() => {
+          if (document.getElementById('scheduledCallModal').classList.contains('show')) {
+            playRingingSound();
+          }
+        }, 1000);
+      } catch (e) {
+        console.log('Audio play failed (browser policy):', e);
+      }
+    }
+    
+    // Function to stop ringing sound
+    function stopRingingSound() {
+      // Create a simple beep sound
+      try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.1);
+      } catch (e) {
+        console.log('Could not stop ringing sound:', e);
+      }
+    }
+    
+    async function acceptScheduledCall() {
+      if (!currentScheduledCall) return;
+      
+      // Stop ringing sound
+      stopRingingSound();
+      
+      try {
+        const response = await fetch(`/messages/api/scheduled-call/${currentScheduledCall.id}/start/`, {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+          }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          // Close modal and redirect to call room
+          const modal = bootstrap.Modal.getInstance(document.getElementById('scheduledCallModal'));
+          modal.hide();
+          
+          // Open call in new window or redirect
+          window.location.href = data.redirect_url;
+        }
+      } catch (error) {
+        console.error('Error starting call:', error);
+        alert('Failed to start call. Please try again.');
+      }
+    }
+    
+    // Helper function to get CSRF token
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+    
+    // Function to fetch and display notifications
+    async function loadNotifications() {
+      try {
+        const response = await fetch('/messages/notifications/');
+        const data = await response.json();
+        
+        // If the user is currently viewing a conversation thread, don't show
+        // MESSAGE notifications for that same conversation. We auto-mark them read.
+        const activeConversationId = window.activeConversationId ? String(window.activeConversationId) : null;
+        if (activeConversationId && !window.__autoMarkingNotifications) {
+          const messageNotifsForActiveThread = (data.notifications || []).filter(n =>
+            n.notification_type === 'MESSAGE' &&
+            n.conversation_id &&
+            String(n.conversation_id) === activeConversationId
+          );
+
+          if (messageNotifsForActiveThread.length > 0) {
+            window.__autoMarkingNotifications = true;
+            await Promise.all(
+              messageNotifsForActiveThread.map(n =>
+                fetch(`/messages/notifications/${n.id}/read/`, {
+                  method: 'POST',
+                  headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json',
+                  },
+                })
+              )
+            );
+            window.__autoMarkingNotifications = false;
+            // Reload notifications after marking as read.
+            return loadNotifications();
+          }
+        }
+        
+        const notificationList = document.getElementById('notification-list');
+        const notificationCount = document.getElementById('notification-count');
+        
+        if (data.notifications.length > 0) {
+          let html = '';
+          data.notifications.forEach(notification => {
+            html += `
+              <div class="dropdown-item notification-item" data-id="${notification.id}" data-read="${notification.is_read}" style="border-bottom: 1px solid #eee; padding: 12px;">
+                <div class="d-flex">
+                  <div class="me-3">
+                    ${getNotificationIcon(notification.notification_type)}
+                  </div>
+                  <div class="flex-grow-1">
+                    <h6 class="mb-1" style="font-size: 0.95rem;">${notification.title}</h6>
+                    <p class="mb-1 small text-muted" style="font-size: 0.85rem;">${notification.message}</p>
+                    <small class="text-muted">${new Date(notification.created_at).toLocaleString()}</small>
+                  </div>
+                  <div>
+                    <button class="btn btn-sm btn-link p-0" onclick="markNotificationRead(${notification.id})" title="Mark as read">
+                      <i class="bi bi-check-circle text-success"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            `;
+                      
+            // Add action buttons for specific notification types
+            let actionHtml = '';
+                      
+            if (notification.notification_type === 'CALL_INVITE' && notification.call_id) {
+              actionHtml = `
+                <div class="d-flex gap-2 mt-2 px-4">
+                  <a href="/messages/call/${notification.call_room_id}/" class="btn btn-sm btn-success flex-fill">
+                    <i class="bi bi-telephone-fill"></i> Accept Call
+                  </a>
+                  <button class="btn btn-sm btn-outline-danger flex-fill" onclick="declineCall(${notification.call_id})">
+                    <i class="bi bi-telephone-x"></i> Decline
+                  </button>
+                </div>
+              `;
+            }
+            else if (notification.notification_type === 'MESSAGE') {
+              const messageHref = notification.conversation_id
+                ? `/messages/${notification.conversation_id}/`
+                : `{% url 'messaging:inbox' %}`;
+              actionHtml = `
+                <div class="d-flex mt-2 px-4">
+                  <a href="${messageHref}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-chat-dots"></i> Open Chat
+                  </a>
+                </div>
+              `;
+            }
+            else if (notification.notification_type === 'PRESCRIPTION' || notification.notification_type === 'PRESCRIPTION_UPDATE') {
+              actionHtml = `
+                <div class="d-flex mt-2 px-4">
+                  <a href="/prescriptions/" class="btn btn-sm btn-success">
+                    <i class="bi bi-file-medical"></i> View Prescriptions
+                  </a>
+                </div>
+              `;
+            }
+            else if (notification.notification_type === 'SCHEDULED_CALL' && notification.scheduled_call_id) {
+              actionHtml = `
+                <div class="d-flex mt-2 px-4">
+                  <a href="/messages/scheduled-call/${notification.scheduled_call_id}/start/" class="btn btn-sm btn-primary">
+                    <i class="bi bi-calendar-check"></i> Start Call
+                  </a>
+                </div>
+              `;
+            }
+            else if (notification.notification_type === 'APPOINTMENT_REQUEST' && notification.appointment_id) {
+              actionHtml = `
+                <div class="d-flex mt-2 px-4">
+                  <a href="/appointments/${notification.appointment_id}/respond/" class="btn btn-sm btn-primary flex-fill">
+                    <i class="bi bi-calendar2-event"></i> Review Appointment
+                  </a>
+                </div>
+              `;
+            }
+            else if (notification.notification_type === 'APPOINTMENT_APPROVED' && notification.appointment_id) {
+              actionHtml = `
+                <div class="d-flex mt-2 px-4">
+                  <a href="/appointments/${notification.appointment_id}/" class="btn btn-sm btn-success flex-fill">
+                    <i class="bi bi-calendar-check"></i> View Appointment
+                  </a>
+                </div>
+              `;
+            }
+            else if (notification.notification_type === 'APPOINTMENT_REMINDER' && notification.appointment_id) {
+              actionHtml = `
+                <div class="d-flex mt-2 px-4">
+                  <a href="/appointments/" class="btn btn-sm btn-info">
+                    <i class="bi bi-calendar-event"></i> View Appointments
+                  </a>
+                </div>
+              `;
+            }
+            else if (notification.notification_type === 'SCHEDULED_CONSULTATION' && notification.consultation_id) {
+              actionHtml = `
+                <div class="d-flex mt-2 px-4">
+                  <a href="/consultations/dashboard/" class="btn btn-sm btn-purple">
+                    <i class="bi bi-camera-video"></i> Join Consultation
+                  </a>
+                </div>
+              `;
+            }
+                      
+            html += actionHtml;
+                      
+            // Add divider after each notification except the last one
+            if (data.notifications.indexOf(notification) < data.notifications.length - 1) {
+              html += `<div class="dropdown-divider my-0"></div>`;
+            }
+          });
+          
+          notificationList.innerHTML = html;
+          
+          // Update notification count
+          const unreadCount = data.notifications.filter(n => !n.is_read).length;
+          if (unreadCount > 0) {
+            notificationCount.textContent = unreadCount;
+            notificationCount.style.display = 'block';
+          } else {
+            notificationCount.style.display = 'none';
+          }
+        } else {
+          notificationList.innerHTML = `
+            <div class="text-center py-4 text-muted">
+              <i class="bi bi-bell-slash" style="font-size: 2rem; margin-bottom: 10px;"></i>
+              <p class="mb-0">No new notifications</p>
+              <small class="text-muted">You're all caught up!</small>
+            </div>
+          `;
+          notificationCount.style.display = 'none';
+        }
+      } catch (error) {
+        console.error('Error loading notifications:', error);
+      }
+    }
+    
+    // Helper function to get notification icon
+    function getNotificationIcon(type) {
+      const icons = {
+        'CALL_INVITE': '<i class="bi bi-telephone-fill text-primary" style="font-size: 1.5rem;"></i>',
+        'CALL_MISSED': '<i class="bi bi-telephone-x-fill text-danger" style="font-size: 1.5rem;"></i>',
+        'MESSAGE': '<i class="bi bi-chat-dots-fill text-info" style="font-size: 1.5rem;"></i>',
+        'PRESCRIPTION': '<i class="bi bi-file-medical-fill text-success" style="font-size: 1.5rem;"></i>',
+        'PRESCRIPTION_UPDATE': '<i class="bi bi-file-earmark-medical-fill text-warning" style="font-size: 1.5rem;"></i>',
+        'SCHEDULED_CALL': '<i class="bi bi-calendar-check-fill text-primary" style="font-size: 1.5rem;"></i>',
+        'APPOINTMENT_REQUEST': '<i class="bi bi-calendar2-event-fill text-primary" style="font-size: 1.5rem;"></i>',
+        'APPOINTMENT_APPROVED': '<i class="bi bi-calendar-check-fill text-success" style="font-size: 1.5rem;"></i>',
+        'APPOINTMENT_REMINDER': '<i class="bi bi-alarm-fill text-info" style="font-size: 1.5rem;"></i>',
+        'SCHEDULED_CONSULTATION': '<i class="bi bi-camera-video-fill text-purple" style="font-size: 1.5rem;"></i>'
+      };
+      return icons[type] || '<i class="bi bi-bell-fill text-secondary" style="font-size: 1.5rem;"></i>';
+    }
+    
+    // Mark notification as read
+    async function markNotificationRead(id) {
+      try {
+        await fetch(`/messages/notifications/${id}/read/`, {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+          }
+        });
+        
+        // Reload notifications
+        loadNotifications();
+      } catch (error) {
+        console.error('Error marking notification as read:', error);
+      }
+    }
+    
+    // Clear all notifications
+    async function clearNotifications() {
+      try {
+        await fetch('/messages/notifications/clear/', {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+          }
+        });
+        
+        // Reload notifications
+        loadNotifications();
+      } catch (error) {
+        console.error('Error clearing notifications:', error);
+      }
+    }
+    
+    // Check for notifications every 10 seconds
+    function startNotificationCheck() {
+      loadNotifications(); // Load immediately
+      setInterval(loadNotifications, 10000); // Then every 10 seconds
+    }
+    
+    // Start WebSocket connection and checks when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      // Only start if user is authenticated (this script is only included when authenticated)
+      initWebSocket();
+      startNotificationCheck();
+    });
+  </script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

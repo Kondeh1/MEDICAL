@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Medical records — Telemedicine{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-file-medical"></i> Medical records</h2>
+
+{% if user.is_provider %}
+  <p><a href="{% url 'medical_records:create' %}" class="btn btn-primary">Add record</a></p>
+{% endif %}
+
+<div class="list-group">
+  {% for record in records %}
+    <a href="{% url 'medical_records:detail' record.pk %}" class="list-group-item list-group-item-action">
+      <strong>{{ record.title }}</strong> — {{ record.created_at|date:"M d, Y" }}
+      {% if user.is_provider %} (patient: {{ record.patient.get_full_name|default:record.patient.username }}){% endif %}
+    </a>
+  {% empty %}
+    <p class="text-muted">No medical records.</p>
+  {% endfor %}
+</div>
+{% endblock %}

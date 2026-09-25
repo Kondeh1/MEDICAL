@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block title %}My Prescriptions — Telemedicine{% endblock %}
+
+{% block extra_css %}
+<style>
+  .prescriptions-container {
+    background: linear-gradient(135deg,#09d2e822 50%);
+    min-height: calc(100vh - 70px);
+    padding: 30px 0;
+  }
+  .prescriptions-header {
+    color: #0a1628;
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  .prescriptions-header i {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+  }
+  .btn-back {
+    background: white;
+    color: #0a1628;
+    border: 1px solid #0a1628;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+  }
+  .btn-back:hover {
+    background: #0a1628;
+    color: white;
+  }
+  .btn-blueblack {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+  }
+  .btn-blueblack:hover {
+    background: linear-gradient(135deg, #1a2a3a 0%, #0a1628 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(10, 22, 40, 0.4);
+  }
+  .prescription-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(10, 22, 40, 0.08);
+    border: 1px solid rgba(10, 22, 40, 0.1);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    margin-bottom: 15px;
+  }
+  .prescription-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(10, 22, 40, 0.2);
+    border-color: #1a2a3a;
+  }
+  .prescription-card a {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    text-decoration: none;
+    color: inherit;
+    gap: 15px;
+  }
+  .prescription-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+  }
+  .prescription-info {
+    flex: 1;
+  }
+  .prescription-id {
+    font-weight: 700;
+    color: #0a1628;
+    font-size: 1.1rem;
+  }
+  .prescription-date {
+    color: #6b7280;
+    font-size: 0.9rem;
+  }
+  .prescription-person {
+    color: #1a2a3a;
+    font-weight: 500;
+  }
+  .prescription-arrow {
+    color: #0a1628;
+    font-size: 1.2rem;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6b7280;
+  }
+  .empty-state i {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    color: rgba(10, 22, 40, 0.2);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="prescriptions-container">
+  <div class="container">
+    <a href="{% url 'dashboard:patient_dashboard' %}" class="btn-back">
+      <i class="bi bi-arrow-left"></i> Back to Dashboard
+    </a>
+    <h2 class="prescriptions-header">
+      <i class="bi bi-prescription2"></i>
+      My Prescriptions
+    </h2>
+
+    {% if user.is_provider %}
+      <p><a href="{% url 'prescriptions:create' %}" class="btn-blueblack mb-4"><i class="bi bi-plus-lg"></i> Create Prescription</a></p>
+    {% endif %}
+
+    {% for rx in prescriptions %}
+      <div class="prescription-card">
+        <a href="{% url 'prescriptions:detail' rx.pk %}">
+          <div class="prescription-icon">
+            <i class="bi bi-file-medical"></i>
+          </div>
+          <div class="prescription-info">
+            <div class="prescription-id">Prescription #{{ rx.pk }}</div>
+            <div class="prescription-date">{{ rx.created_at|date:"M d, Y" }}</div>
+            <div class="prescription-person">
+              {% if user.is_patient %}by {{ rx.provider.get_full_name|default:rx.provider.username }}{% else %}for {{ rx.patient.get_full_name|default:rx.patient.username }}{% endif %}
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <a href="{% url 'prescriptions:download' rx.pk 'pdf' %}" class="btn btn-sm" style="background: #0d6efd; color: white; border: none; padding: 6px 12px; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 4px; font-size: 0.8rem;">
+              <i class="bi bi-download"></i> PDF
+            </a>
+            <div class="prescription-arrow">
+              <i class="bi bi-chevron-right"></i>
+            </div>
+          </div>
+        </a>
+      </div>
+    {% empty %}
+      <div class="empty-state">
+        <i class="bi bi-prescription2"></i>
+        <h4>No Prescriptions</h4>
+        <p>You don't have any prescriptions yet.</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

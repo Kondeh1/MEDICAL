@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load form_utils %}
+
+{% block title %}Create prescription — Telemedicine{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Create prescription</h2>
+<form method="post" action="">
+  {% csrf_token %}
+  {{ form|crispy }}
+  <h5 class="mt-4">Medications</h5>
+  {{ formset.management_form }}
+  {% for f in formset %}
+    <div class="card mb-2">
+      <div class="card-body">
+        {{ f|crispy }}
+      </div>
+    </div>
+  {% endfor %}
+  <button type="submit" class="btn btn-primary">Save prescription</button>
+  <a href="{% url 'prescriptions:list' %}" class="btn btn-outline-secondary">Cancel</a>
+</form>
+{% endblock %}

@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+
+{% block title %}Audit Logs — Medical Director{% endblock %}
+
+{% block extra_css %}
+<style>
+  .audit-container {
+    background: linear-gradient(135deg,#09d2e822 50%);
+    min-height: calc(100vh - 70px);
+    padding: 30px 0;
+  }
+  .audit-header {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 50%, #0d1b2a 100%);
+    color: white;
+    padding: 40px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 15px 40px rgba(10, 22, 40, 0.25);
+    position: relative;
+    overflow: hidden;
+  }
+  .audit-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255,193,7,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .audit-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .audit-header-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #18dae4 0%, #20c997 100%);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+    box-shadow: 0 8px 20px rgba(32, 201, 151, 0.3);
+  }
+  .audit-header h2 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 2.2rem;
+  }
+  .audit-header p {
+    margin: 5px 0 0 0;
+    opacity: 0.8;
+  }
+  .btn-back {
+    background: white;
+    color: #0a1628;
+    border: 1px solid #0a1628;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+  }
+  .btn-back:hover {
+    background: #0a1628;
+    color: white;
+  }
+  .btn-back i {
+    font-size: 1rem;
+  }
+  .filter-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgb(9, 3, 75);
+    border: 1px solid rgba(13, 106, 244, 0.1);
+    margin-bottom: 25px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .filter-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(14, 7, 55, 0.961);
+    border-color: #18dae4;
+  }
+  .filter-card .card-body {
+    padding: 25px;
+  }
+  .filter-card .form-label {
+    color: #fc2605;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .filter-card .form-select {
+    border: 2px solid rgba(10, 22, 40, 0.15);
+    border-radius: 10px;
+    padding: 10px 15px;
+    transition: all 0.3s ease;
+  }
+  .filter-card .form-select:focus {
+    border-color: #ffc107;
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.15);
+  }
+  .btn-gold {
+    background: linear-gradient(135deg, #20c997 0%, #1abc9c 100%);
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  .btn-gold:hover {
+    background: linear-gradient(135deg, #1abc9c 0%, #20c997 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(32, 201, 151, 0.4);
+  }
+  .btn-outline-gold {
+    background: transparent;
+    border: 2px solid #ffc107;
+    color: #0a1628;
+    padding: 8px 18px;
+    border-radius: 10px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-outline-gold:hover {
+    background: #ffc107;
+    color: #0a1628;
+  }
+  .data-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(10, 22, 40, 0.08);
+    border: 1px solid rgba(10, 22, 40, 0.1);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .data-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(10, 22, 40, 0.2);
+    border-color: #ffc107;
+  }
+  .data-card thead {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: white;
+  }
+  .data-card th {
+    font-weight: 600;
+    padding: 18px 15px;
+    border: none;
+  }
+  .data-card td {
+    padding: 15px;
+    vertical-align: middle;
+    border-bottom: 1px solid rgba(10, 22, 40, 0.08);
+  }
+  .data-card tbody tr {
+    transition: all 0.3s ease;
+  }
+  .data-card tbody tr:hover {
+    background: rgba(255, 193, 7, 0.05);
+  }
+  .action-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .action-create { background: rgba(32, 201, 151, 0.15); color: #20c997; }
+  .action-update { background: rgba(32, 201, 151, 0.15); color: #20c997; }
+  .action-delete { background: rgba(220, 53, 69, 0.15); color: #dc3545; }
+  .action-login { background: rgba(32, 201, 151, 0.15); color: #20c997; }
+  .action-logout { background: rgba(32, 201, 151, 0.15); color: #20c997; }
+  .action-default { background: rgba(32, 201, 151, 0.15); color: #20c997; }
+  .empty-state {
+    padding: 60px 20px;
+    text-align: center;
+    color: #6c757d;
+  }
+  .empty-state i {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    color: rgba(10, 22, 40, 0.2);
+  }
+  .pagination .page-link {
+    color: #0a1628;
+    border: 1px solid rgba(10, 22, 40, 0.15);
+    margin: 0 3px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+  .pagination .page-link:hover {
+    background: #0a1628;
+    color: white;
+    border-color: #0a1628;
+    transform: translateY(-2px);
+  }
+  .pagination .page-item.disabled .page-link {
+    background: rgba(10, 22, 40, 0.05);
+    color: #6c757d;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="audit-container">
+  <div class="container">
+    <a href="{% url 'dashboard:admin_dashboard' %}" class="btn-back">
+      <i class="bi bi-arrow-left"></i> Back to Admin Dashboard
+    </a>
+    <div class="audit-header">
+      <div class="audit-header-content">
+        <div class="audit-header-icon">
+          <i class="bi bi-journal-text"></i>
+        </div>
+        <div>
+          <h2>Audit Logs</h2>
+          <p>Track and monitor system activities</p>
+        </div>
+      </div>
+    </div>
+
+  <div class="filter-card">
+    <div class="card-body">
+      <form method="get">
+        <div class="row g-3 align-items-end">
+          <div class="col-md-4">
+            <label for="action" class="form-label"><i class="bi bi-funnel"></i> Filter by Action</label>
+            <select name="action" id="action" class="form-select">
+              <option value="">All Actions</option>
+              {% for value, label in audit_actions %}
+                <option value="{{ value }}" {% if action_filter == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-2">
+            <button type="submit" class="btn btn-gold w-100">
+              <i class="bi bi-funnel-fill"></i> Filter
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="data-card">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th><i class="bi bi-clock"></i> Time</th>
+            <th><i class="bi bi-person"></i> User</th>
+            <th><i class="bi bi-activity"></i> Action</th>
+            <th><i class="bi bi-chat-left-text"></i> Message</th>
+            <th><i class="bi bi-globe"></i> IP Address</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry in page_obj %}
+            <tr>
+              <td><strong>{{ entry.created_at|date:"Y-m-d" }}</strong><br><small class="text-muted">{{ entry.created_at|date:"H:i" }}</small></td>
+              <td>
+                <div class="d-flex align-items-center">
+                  <div class="bg-blueblack rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px; background: linear-gradient(135deg, #0a1628, #1a2a3a); color: white; font-weight: 600;">
+                    {{ entry.user.get_full_name|default:entry.user.username|first|upper }}
+                  </div>
+                  {{ entry.user.get_full_name|default:entry.user.username|default:"—" }}
+                </div>
+              </td>
+              <td>
+                <span class="action-badge action-{{ entry.action|lower }}">
+                  {{ entry.get_action_display }}
+                </span>
+              </td>
+              <td>{{ entry.message|truncatewords:15 }}</td>
+              <td><code class="bg-light px-2 py-1 rounded">{{ entry.ip_address|default:"—" }}</code></td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="5">
+                <div class="empty-state">
+                  <i class="bi bi-inbox"></i>
+                  <h5>No Audit Log Entries</h5>
+                  <p>No activities have been recorded yet.</p>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% if page_obj.has_other_pages %}
+    <nav class="mt-4">
+      <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if action_filter %}&action={{ action_filter }}{% endif %}">
+              <i class="bi bi-chevron-left"></i> Previous
+            </a>
+          </li>
+        {% endif %}
+        <li class="page-item disabled">
+          <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        </li>
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if action_filter %}&action={{ action_filter }}{% endif %}">
+              Next <i class="bi bi-chevron-right"></i>
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+</div>
+{% endblock %}

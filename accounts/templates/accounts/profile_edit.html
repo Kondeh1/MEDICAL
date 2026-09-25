@@ -1,0 +1,697 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile — Telemedicine{% endblock %}
+
+{% block extra_css %}
+<style>
+  .edit-container { 
+    max-width: 900px; 
+    margin: 0 auto; 
+    padding: 40px 20px;
+    background: linear-gradient(to bottom, #f8fafc 0%, #e2e8f0 100%);
+    min-height: 100vh;
+  }
+  
+  .edit-header {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: #fff; 
+    padding: 40px; 
+    border-radius: 20px; 
+    margin-bottom: 30px;
+    box-shadow: 0 10px 40px rgba(10,22,40,0.3);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .edit-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 200px;
+    height: 200px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+  
+  .edit-header h2 { 
+    margin: 0; 
+    font-weight: 700; 
+    font-size: 1.8rem; 
+    display: flex; 
+    align-items: center; 
+    gap: 12px;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .edit-header p {
+    margin: 10px 0 0 0;
+    opacity: 0.9;
+    font-size: 0.95rem;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .edit-card {
+    background: #fff; 
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(10,22,40,0.08);
+    border: 1px solid rgba(10,22,40,0.05);
+    overflow: hidden; 
+    margin-bottom: 24px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .edit-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(10,22,40,0.12);
+  }
+  
+  .edit-card .card-header {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: #fff; 
+    padding: 18px 24px; 
+    font-weight: 600;
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+    font-size: 1rem;
+    border-bottom: 3px solid rgba(255,255,255,0.1);
+  }
+  
+  .edit-card .card-header i {
+    font-size: 1.2rem;
+  }
+  
+  .edit-card .card-body { 
+    padding: 28px; 
+    background: #ffffff;
+  }
+  
+  .field-row { 
+    margin-bottom: 1.4rem; 
+    position: relative;
+  }
+  
+  .field-row:last-child { 
+    margin-bottom: 0; 
+  }
+  
+  .field-row label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600; 
+    font-size: 0.9rem;
+    color: #0a1628; 
+    margin-bottom: 0.5rem;
+  }
+  
+  .field-row label i {
+    font-size: 0.9rem;
+    color: #64748b;
+  }
+  
+  .field-row .form-control,
+  .field-row .form-select,
+  .field-row textarea {
+    width: 100%; 
+    border: 2px solid #e2e8f0; 
+    border-radius: 12px;
+    padding: 0.75rem 1.25rem; 
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+  
+  .field-row .form-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%230a1628' d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1.25rem center;
+    background-size: 16px 12px;
+    padding-right: 3.5rem;
+  }
+  
+  .field-row .form-control:focus,
+  .field-row .form-select:focus,
+  .field-row textarea:focus {
+    border-color: #0a1628; 
+    box-shadow: 0 0 0 4px rgba(10,22,40,0.1); 
+    outline: none;
+    background: #ffffff;
+  }
+  
+  /* Style date input to match other fields */
+  .field-row input[type="date"] {
+    min-height: 48px;
+  }
+  
+  .field-row input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    padding: 4px;
+    margin-right: 4px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+  }
+  
+  .field-row input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+  }
+  
+  .field-row textarea { 
+    resize: vertical; 
+    min-height: 100px; 
+    line-height: 1.6;
+  }
+  
+  .field-row .helptext { 
+    font-size: 0.825rem; 
+    color: #64748b; 
+    margin-top: 0.4rem; 
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .field-row .helptext i {
+    font-size: 0.75rem;
+  }
+  
+  .field-row .errorlist { 
+    list-style: none; 
+    padding: 0; 
+    margin: 0.5rem 0 0; 
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .field-row .errorlist li { 
+    color: #dc2626; 
+    font-size: 0.85rem; 
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #fef2f2;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border-left: 3px solid #dc2626;
+  }
+  
+  .field-row.is-invalid .form-control,
+  .field-row.is-invalid textarea { 
+    border-color: #dc2626;
+    background: #fef2f2;
+  }
+  
+  .field-row.is-invalid label i {
+    color: #dc2626;
+  }
+  
+  .btn-save {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: #fff; 
+    border: none; 
+    padding: 14px 40px; 
+    border-radius: 12px;
+    font-weight: 600; 
+    font-size: 1rem; 
+    cursor: pointer;
+    display: inline-flex; 
+    align-items: center; 
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 14px rgba(10,22,40,0.25);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn-save::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+  }
+  
+  .btn-save:hover::before {
+    left: 100%;
+  }
+  
+  .btn-save:hover { 
+    color: #fff; 
+    box-shadow: 0 8px 25px rgba(10,22,40,0.35); 
+    transform: translateY(-2px); 
+  }
+  
+  .btn-save:active {
+    transform: translateY(0);
+  }
+  
+  .btn-cancel {
+    background: transparent; 
+    border: 2px solid #cbd5e1; 
+    color: #64748b;
+    padding: 12px 32px; 
+    border-radius: 12px; 
+    font-weight: 600;
+    font-size: 1rem; 
+    text-decoration: none;
+    display: inline-flex; 
+    align-items: center; 
+    gap: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .btn-cancel:hover { 
+    border-color: #0a1628; 
+    color: #0a1628; 
+    background: #f1f5f9; 
+    transform: translateY(-2px);
+  }
+  
+  .non-field-errors {
+    border: 2px solid #fecaca; 
+    border-radius: 12px;
+    padding: 1rem 1.25rem; 
+    margin-bottom: 1.5rem; 
+    color: #dc2626; 
+    font-size: 0.9rem;
+    background: #fef2f2;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .non-field-errors::before {
+    content: '⚠️';
+    margin-right: 8px;
+  }
+  
+  .section-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+  }
+  
+  .required-field {
+    color: #dc2626;
+    font-weight: 700;
+  }
+  
+  @media (max-width: 768px) {
+    .edit-container {
+      padding: 20px 15px;
+    }
+    
+    .edit-header {
+      padding: 30px 20px;
+    }
+    
+    .edit-header h2 {
+      font-size: 1.4rem;
+    }
+    
+    .edit-card .card-body {
+      padding: 20px;
+    }
+    
+    .btn-save,
+    .btn-cancel {
+      width: 100%;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="edit-container">
+  <div class="edit-header">
+    <h2><i class="bi bi-person-lines-fill"></i> Edit Your Profile</h2>
+    <p>Update your personal information and professional details</p>
+  </div>
+
+  <form method="post" action="" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+
+    <!-- Account Details -->
+    <div class="edit-card">
+      <div class="card-header">
+        <div class="section-icon">
+          <i class="bi bi-person-vcard-fill"></i>
+        </div>
+        <span>Account Details</span>
+      </div>
+      <div class="card-body">
+        {% if form.non_field_errors %}
+          <div class="non-field-errors">
+            {% for e in form.non_field_errors %}
+              <div>{{ e }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+        
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="field-row {% if form.first_name.errors %}is-invalid{% endif %}">
+              <label for="{{ form.first_name.id_for_label }}">
+                <i class="bi bi-person"></i> First name
+              </label>
+              {{ form.first_name }}
+              {% if form.first_name.errors %}
+                <ul class="errorlist">
+                  {% for e in form.first_name.errors %}
+                    <li><i class="bi bi-exclamation-circle"></i> {{ e }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+            <div class="field-row {% if form.last_name.errors %}is-invalid{% endif %}">
+              <label for="{{ form.last_name.id_for_label }}">
+                <i class="bi bi-person"></i> Last name
+              </label>
+              {{ form.last_name }}
+              {% if form.last_name.errors %}
+                <ul class="errorlist">
+                  {% for e in form.last_name.errors %}
+                    <li><i class="bi bi-exclamation-circle"></i> {{ e }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+            <div class="field-row {% if form.email.errors %}is-invalid{% endif %}">
+              <label for="{{ form.email.id_for_label }}">
+                <i class="bi bi-envelope"></i> Email <span class="required-field">*</span>
+              </label>
+              {{ form.email }}
+              {% if form.email.errors %}
+                <ul class="errorlist">
+                  {% for e in form.email.errors %}
+                    <li><i class="bi bi-exclamation-circle"></i> {{ e }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+            <div class="field-row {% if form.phone.errors %}is-invalid{% endif %}">
+              <label for="{{ form.phone.id_for_label }}">
+                <i class="bi bi-telephone"></i> Phone
+              </label>
+              {{ form.phone }}
+              {% if form.phone.errors %}
+                <ul class="errorlist">
+                  {% for e in form.phone.errors %}
+                    <li><i class="bi bi-exclamation-circle"></i> {{ e }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          </div>
+          
+          <div class="col-12">
+            <div class="field-row {% if form.profile_picture.errors %}is-invalid{% endif %}">
+              <label for="{{ form.profile_picture.id_for_label }}">
+                <i class="bi bi-image"></i> Profile picture
+              </label>
+              {{ form.profile_picture }}
+              <span class="helptext">
+                <i class="bi bi-info-circle"></i> Upload a professional photo (JPG, PNG - max 5MB)
+              </span>
+              {% if form.profile_picture.errors %}
+                <ul class="errorlist">
+                  {% for e in form.profile_picture.errors %}
+                    <li><i class="bi bi-exclamation-circle"></i> {{ e }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Patient: Medical Information -->
+    {% if patient_form %}
+      <div class="edit-card">
+        <div class="card-header">
+          <div class="section-icon">
+            <i class="bi bi-heart-pulse-fill"></i>
+          </div>
+          <span>Medical Information</span>
+        </div>
+        <div class="card-body">
+          {% if patient_form.non_field_errors %}
+            <div class="non-field-errors">
+              {% for e in patient_form.non_field_errors %}
+                <div>{{ e }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+          
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="field-row {% if patient_form.date_of_birth.errors %}is-invalid{% endif %}">
+                <label for="{{ patient_form.date_of_birth.id_for_label }}">
+                  <i class="bi bi-calendar-event"></i> Date of birth
+                </label>
+                {{ patient_form.date_of_birth }}
+                {% if patient_form.date_of_birth.errors %}
+                  <ul class="errorlist">
+                    {% for e in patient_form.date_of_birth.errors %}
+                      <li><i class="bi bi-exclamation-circle"></i> {{ e }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="field-row {% if patient_form.blood_type.errors %}is-invalid{% endif %}">
+                <label for="{{ patient_form.blood_type.id_for_label }}">
+                  <i class="bi bi-droplet-half"></i> Blood type
+                </label>
+                {{ patient_form.blood_type }}
+                <span class="helptext">
+                  <i class="bi bi-info-circle"></i> Select your blood group
+                </span>
+                {% if patient_form.blood_type.errors %}
+                  <ul class="errorlist">
+                    {% for e in patient_form.blood_type.errors %}
+                      <li><i class="bi bi-exclamation-circle"></i> {{ e }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </div>
+            </div>
+            
+            <div class="col-12">
+              <div class="field-row {% if patient_form.address.errors %}is-invalid{% endif %}">
+                <label for="{{ patient_form.address.id_for_label }}">
+                  <i class="bi bi-geo-alt"></i> Address
+                </label>
+                {{ patient_form.address }}
+                {% if patient_form.address.errors %}
+                  <ul class="errorlist">
+                    {% for e in patient_form.address.errors %}
+                      <li><i class="bi bi-exclamation-circle"></i> {{ e }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="field-row {% if patient_form.emergency_contact.errors %}is-invalid{% endif %}">
+                <label for="{{ patient_form.emergency_contact.id_for_label }}">
+                  <i class="bi bi-telephone-fill"></i> Emergency contact
+                </label>
+                {{ patient_form.emergency_contact }}
+                <span class="helptext">
+                  <i class="bi bi-info-circle"></i> Phone number for emergency contact
+                </span>
+                {% if patient_form.emergency_contact.errors %}
+                  <ul class="errorlist">
+                    {% for e in patient_form.emergency_contact.errors %}
+                      <li><i class="bi bi-exclamation-circle"></i> {{ e }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="field-row {% if patient_form.allergies.errors %}is-invalid{% endif %}">
+                <label for="{{ patient_form.allergies.id_for_label }}">
+                  <i class="bi bi-bandaid"></i> Allergies
+                </label>
+                {{ patient_form.allergies }}
+                <span class="helptext">
+                  <i class="bi bi-info-circle"></i> List any known allergies
+                </span>
+                {% if patient_form.allergies.errors %}
+                  <ul class="errorlist">
+                    {% for e in patient_form.allergies.errors %}
+                      <li><i class="bi bi-exclamation-circle"></i> {{ e }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </div>
+            </div>
+            
+            <div class="col-12">
+              <div class="field-row {% if patient_form.medical_history_summary.errors %}is-invalid{% endif %}">
+                <label for="{{ patient_form.medical_history_summary.id_for_label }}">
+                  <i class="bi bi-file-medical"></i> Medical history summary
+                </label>
+                {{ patient_form.medical_history_summary }}
+                <span class="helptext">
+                  <i class="bi bi-info-circle"></i> Brief summary of important medical history
+                </span>
+                {% if patient_form.medical_history_summary.errors %}
+                  <ul class="errorlist">
+                    {% for e in patient_form.medical_history_summary.errors %}
+                      <li><i class="bi bi-exclamation-circle"></i> {{ e }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Provider: Professional Details -->
+    {% if provider_form %}
+      <div class="edit-card">
+        <div class="card-header">
+          <div class="section-icon">
+            <i class="bi bi-briefcase-fill"></i>
+          </div>
+          <span>Professional Details</span>
+        </div>
+        <div class="card-body">
+          {% if provider_form.non_field_errors %}
+            <div class="non-field-errors">
+              {% for e in provider_form.non_field_errors %}
+                <div>{{ e }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+          
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="field-row {% if provider_form.credentials.errors %}is-invalid{% endif %}">
+                <label for="{{ provider_form.credentials.id_for_label }}">
+                  <i class="bi bi-award"></i> Credentials <span class="required-field">*</span>
+                </label>
+                {{ provider_form.credentials }}
+                <span class="helptext">
+                  <i class="bi bi-info-circle"></i> e.g. MD, MBBS, PharmD, NP
+                </span>
+                {% if provider_form.credentials.errors %}
+                  <ul class="errorlist">
+                    {% for e in provider_form.credentials.errors %}
+                      <li><i class="bi bi-exclamation-circle"></i> {{ e }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="field-row {% if provider_form.specialization.errors %}is-invalid{% endif %}">
+                <label for="{{ provider_form.specialization.id_for_label }}">
+                  <i class="bi bi-stethoscope"></i> Specialization <span class="required-field">*</span>
+                </label>
+                {{ provider_form.specialization }}
+                <span class="helptext">
+                  <i class="bi bi-info-circle"></i> e.g. Cardiology, Dermatology, Pediatrics
+                </span>
+                {% if provider_form.specialization.errors %}
+                  <ul class="errorlist">
+                    {% for e in provider_form.specialization.errors %}
+                      <li><i class="bi bi-exclamation-circle"></i> {{ e }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="field-row {% if provider_form.license_number.errors %}is-invalid{% endif %}">
+                <label for="{{ provider_form.license_number.id_for_label }}">
+                  <i class="bi bi-card-checklist"></i> License number
+                </label>
+                {{ provider_form.license_number }}
+                <span class="helptext">
+                  <i class="bi bi-info-circle"></i> Your medical license number
+                </span>
+                {% if provider_form.license_number.errors %}
+                  <ul class="errorlist">
+                    {% for e in provider_form.license_number.errors %}
+                      <li><i class="bi bi-exclamation-circle"></i> {{ e }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </div>
+            </div>
+            
+            <div class="col-12">
+              <div class="field-row {% if provider_form.bio.errors %}is-invalid{% endif %}">
+                <label for="{{ provider_form.bio.id_for_label }}">
+                  <i class="bi bi-person-text"></i> Bio
+                </label>
+                {{ provider_form.bio }}
+                <span class="helptext">
+                  <i class="bi bi-info-circle"></i> A brief professional bio visible to patients
+                </span>
+                {% if provider_form.bio.errors %}
+                  <ul class="errorlist">
+                    {% for e in provider_form.bio.errors %}
+                      <li><i class="bi bi-exclamation-circle"></i> {{ e }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Action Buttons -->
+    <div class="d-flex gap-3 align-items-center justify-content-between flex-wrap" style="margin-top: 30px; padding: 0 10px;">
+      <button type="submit" class="btn-save">
+        <i class="bi bi-check-circle-fill"></i> Save Changes
+      </button>
+      <a href="{% url 'accounts:profile' %}" class="btn-cancel">
+        <i class="bi bi-x-circle-fill"></i> Cancel
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

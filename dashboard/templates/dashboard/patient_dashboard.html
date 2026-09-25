@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Dashboard — Telemedicine{% endblock %}
+
+{% block extra_css %}
+<style>
+  .dashboard-container {
+    background: linear-gradient(135deg,#09d2e822 50%);
+    min-height: calc(100vh - 70px);
+    padding: 30px 0;
+  }
+  .dashboard-header {
+    color: #001f3f;
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  .dashboard-header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  .dashboard-header i {
+    background: linear-gradient(135deg, #001f3f 0%, #143d6b 100%);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+  }
+  .header-profile-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 3px solid #001f3f;
+    box-shadow: 0 4px 12px rgba(0, 31, 63, 0.22);
+  }
+  .header-avatar-placeholder {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #001f3f 0%, #143d6b 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    border: 3px solid #001f3f;
+    box-shadow: 0 4px 12px rgba(0, 31, 63, 0.22);
+  }
+  .stat-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(10, 22, 40, 0.08);
+    border: 1px solid rgba(10, 22, 40, 0.1);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-decoration: none;
+    overflow: hidden;
+  }
+  .stat-card:hover {
+    transform: translateY(-15px) scale(1.03);
+    box-shadow: 0 25px 50px rgba(10, 22, 40, 0.25);
+    z-index: 10;
+  }
+  .stat-card .card-body {
+    padding: 25px;
+    text-align: center;
+  }
+  .stat-card h2 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
+  }
+  .stat-card p {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin: 0;
+    letter-spacing: 0.02em;
+    opacity: 0.95;
+  }
+  /* Patient quick-action cards as separate navy blue buttons */
+  .stat-card-blueblack {
+    border: none;
+    background-color: #001f3f; /* Solid Navy Blue */
+    background: linear-gradient(145deg, #001f3f, #0a2a52);
+    border-radius: 20px;
+    margin-bottom: 20px;
+    display: block;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 10px 20px rgba(0, 31, 63, 0.3);
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .stat-card-blueblack:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0, 31, 63, 0.45);
+    background: linear-gradient(145deg, #0a2a52, #143d6b);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  .stat-card-blueblack .card-body {
+    padding: 35px 25px;
+    text-align: center;
+  }
+  .stat-card-blueblack .stat-card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    display: inline-block;
+    color: #09d2e8; /* Cyan for high contrast */
+    text-shadow: 0 0 15px rgba(9, 210, 232, 0.3);
+  }
+  .stat-card-blueblack h2 {
+    color: #ffffff;
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+    line-height: 1;
+  }
+  .stat-card-blueblack p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  /* Remove the side accent bar from previous version to make it look more like a button */
+  .stat-card-blueblack::before {
+    display: none;
+  }
+  .info-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(10, 22, 40, 0.08);
+    border: 1px solid rgba(10, 22, 40, 0.1);
+    overflow: hidden;
+    height: 100%;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .info-card:hover {
+    transform: translateY(-10px) scale(1.01);
+    box-shadow: 0 25px 50px rgba(10, 22, 40, 0.2);
+    border-color: #1a2a3a;
+    z-index: 10;
+  }
+  .info-card .card-header {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: white;
+    font-weight: 600;
+    padding: 18px 20px;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .info-card .card-header i {
+    font-size: 1.2rem;
+  }
+  .info-card .list-group-item {
+    border-color: rgba(10, 22, 40, 0.1);
+    padding: 15px 20px;
+    transition: background 0.2s ease;
+  }
+  .info-card .list-group-item:hover {
+    background: rgba(10, 22, 40, 0.03);
+  }
+  .info-card .card-footer {
+    background: rgba(10, 22, 40, 0.03);
+    border-top: 1px solid rgba(10, 22, 40, 0.1);
+    padding: 15px 20px;
+  }
+  .info-card .card-footer a {
+    color: #0a1628;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .info-card .card-footer a:hover {
+    color: #1a2a3a;
+  }
+  .badge-blueblack {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+  <div class="container">
+    <div class="dashboard-header justify-content-center">
+      <div class="dashboard-header-left">
+        <i class="bi bi-person"></i>
+        {% if user.profile_picture %}
+          <img src="{{ user.profile_picture.url }}" alt="{{ user.username }}" class="header-profile-img">
+        {% else %}
+          <div class="header-avatar-placeholder">{{ user.username|first|upper }}</div>
+        {% endif %}
+        <span>Patient Dashboard</span>
+      </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="row g-4 mb-5 justify-content-center">
+      <div class="col-md-3">
+        <a href="{% url 'appointments:book' %}" class="stat-card stat-card-blueblack">
+          <div class="card-body">
+            <i class="bi bi-calendar-plus stat-card-icon" aria-hidden="true"></i>
+            <h2><i class="bi bi-plus-lg" aria-hidden="true"></i></h2>
+            <p>Book Appointment</p>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-3">
+        <a href="{% url 'appointments:list' %}" class="stat-card stat-card-blueblack">
+          <div class="card-body">
+            <i class="bi bi-calendar-check stat-card-icon" aria-hidden="true"></i>
+            <h2>{{ recent_appointments|length }}</h2>
+            <p>My Appointments</p>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-3">
+        <a href="{% url 'prescriptions:list' %}" class="stat-card stat-card-blueblack">
+          <div class="card-body">
+            <i class="bi bi-file-medical stat-card-icon" aria-hidden="true"></i>
+            <h2>{{ recent_prescriptions|length }}</h2>
+            <p>My Prescriptions</p>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Info Cards -->
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="info-card">
+          <div class="card-header">
+            <i class="bi bi-calendar-event"></i>
+            Recent Appointments
+          </div>
+          <ul class="list-group list-group-flush">
+            {% for apt in recent_appointments %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>{{ apt.date|date:"M d" }} with {{ apt.provider.get_full_name|default:apt.provider.username }}</span>
+                <span class="badge-blueblack">{{ apt.get_status_display }}</span>
+              </li>
+            {% empty %}
+              <li class="list-group-item text-muted text-center py-4">No appointments scheduled</li>
+            {% endfor %}
+          </ul>
+          <div class="card-footer">
+            <a href="{% url 'appointments:list' %}">
+              View All <i class="bi bi-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="info-card">
+          <div class="card-header">
+            <i class="bi bi-prescription"></i>
+            Recent Prescriptions
+          </div>
+          <ul class="list-group list-group-flush">
+            {% for rx in recent_prescriptions %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>{{ rx.created_at|date:"M d" }} — from {{ rx.provider.get_full_name|default:rx.provider.username }}</span>
+                <i class="bi bi-chevron-right text-muted"></i>
+              </li>
+            {% empty %}
+              <li class="list-group-item text-muted text-center py-4">No prescriptions yet</li>
+            {% endfor %}
+          </ul>
+          <div class="card-footer">
+            <a href="{% url 'prescriptions:list' %}">
+              View All <i class="bi bi-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

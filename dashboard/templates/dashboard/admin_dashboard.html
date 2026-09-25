@@ -1,0 +1,469 @@
+{% extends "base.html" %}
+
+{% block title %}Admin dashboard — Telemedicine{% endblock %}
+
+{% block extra_css %}
+<style>
+  .dashboard-container {
+    background: linear-gradient(135deg,#09d2e822 50%);
+    border-radius: 5px;
+    min-height: calc(100vh - 70px);
+    padding: 30px 0;
+  }
+  .dashboard-header {
+    color: #0a1628;
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+  }
+  .dashboard-header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  .dashboard-header i {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+  }
+  .header-profile-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 3px solid #0a1628;
+    box-shadow: 0 4px 10px rgba(10, 22, 40, 0.2);
+  }
+  .header-avatar-placeholder {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    border: 3px solid #0a1628;
+    box-shadow: 0 4px 10px rgba(10, 22, 40, 0.2);
+  }
+  .header-username {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0a1628;
+  }
+  .stat-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(10, 22, 40, 0.08);
+    border: 1px solid rgba(10, 22, 40, 0.1);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-decoration: none;
+    overflow: hidden;
+  }
+  .stat-card:hover {
+    transform: translateY(-15px) scale(1.03);
+    box-shadow: 0 25px 50px rgba(10, 22, 40, 0.25);
+    z-index: 10;
+  }
+  .stat-card .card-body {
+    padding: 25px;
+    text-align: center;
+  }
+  .stat-card h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+  }
+  .stat-card p {
+    font-weight: 500;
+    margin: 0;
+  }
+  /* Blueblack Card - Bounce with inner glow */
+  .stat-card-blueblack {
+    border-color: #060837;
+    position: relative;
+  }
+
+  .stat-card-blueblack::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    box-shadow: inset 0 0 0 0 rgba(255, 255, 255, 0);
+    transition: box-shadow 0.4s ease;
+  }
+  .stat-card-blueblack:hover::after {
+    box-shadow: inset 0 0 30px 5px rgba(255,255,255,0.15);
+  }
+  .stat-card-blueblack:hover {
+    transform: translateY(-20px) scale(1.05) rotate(-2deg);
+    box-shadow: 0 30px 60px rgb(12, 4, 59), inset 0 0 20px rgba(255,255,255,0.1);
+    animation: bounce-blueblack 0.6s ease;
+  }
+  @keyframes bounce-blueblack {
+    0%, 100% { transform: translateY(-20px) scale(1.05) rotate(-2deg); }
+    50% { transform: translateY(-30px) scale(1.08) rotate(-1deg); }
+  }
+  .stat-card-blueblack .card-body {
+    background: linear-gradient(135deg, #070f48 0%, #1a2a3a 100%);
+  }
+  .stat-card-blueblack h2, .stat-card-blueblack p {
+    color: white;
+  }
+  /* Yellow Card - Bounce with border glow */
+  .stat-card-yellow {
+    border-color: #ffc107;
+    position: relative;
+  }
+  .stat-card-yellow::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 19px;
+    background: linear-gradient(135deg, #ffc107, #ffdb4d, #ffc107);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .stat-card-yellow:hover::before {
+    opacity: 1;
+  }
+  .stat-card-yellow:hover {
+    transform: translateY(-20px) scale(1.05) rotate(2deg);
+    box-shadow: 0 30px 60px rgba(255, 193, 7, 0.6), 0 0 40px rgba(255, 193, 7, 0.3);
+    animation: bounce-yellow 0.6s ease;
+  }
+  @keyframes bounce-yellow {
+    0%, 100% { transform: translateY(-20px) scale(1.05) rotate(2deg); }
+    50% { transform: translateY(-30px) scale(1.08) rotate(3deg); }
+  }
+  .stat-card-yellow .card-body {
+    background: linear-gradient(135deg, #85660a 0%, #ffdb4d 100%);
+  }
+  .stat-card-yellow h2, .stat-card-yellow p {
+    color: #212529;
+  }
+  /* Light Orange Card - Bounce with ripple effect */
+  .stat-card-orange {
+    border-color: #fd7e14;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card-orange::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+  }
+  .stat-card-orange:hover::after {
+    width: 300%;
+    height: 300%;
+  }
+  .stat-card-orange:hover {
+    transform: translateY(-20px) scale(1.05);
+    box-shadow: 0 30px 60px rgba(253, 126, 20, 0.5);
+    animation: bounce-orange 0.6s ease;
+  }
+  @keyframes bounce-orange {
+    0%, 100% { transform: translateY(-20px) scale(1.05); }
+    50% { transform: translateY(-30px) scale(1.08); }
+  }
+  .stat-card-orange .card-body {
+    background: linear-gradient(135deg, #6c3705 0%, #fdcb6e 100%);
+    position: relative;
+    z-index: 1;
+  }
+  .stat-card-orange h2, .stat-card-orange p {
+    color: #212529;
+  }
+  /* Mauve Card - Bounce with shimmer */
+  .stat-card-mauve {
+    border-color: #b784a7;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card-mauve::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%);
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+  }
+  .stat-card-mauve:hover::before {
+    transform: translateX(100%);
+  }
+  .stat-card-mauve::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    border: 2px solid transparent;
+    transition: border-color 0.4s ease;
+  }
+  .stat-card-mauve:hover::after {
+    border-color: rgba(255,255,255,0.5);
+  }
+  .stat-card-mauve:hover {
+    transform: translateY(-20px) scale(1.05) rotate(-1deg);
+    box-shadow: 0 30px 60px rgba(183, 132, 167, 0.5), 0 0 30px rgba(183, 132, 167, 0.3);
+    animation: bounce-mauve 0.6s ease;
+  }
+  @keyframes bounce-mauve {
+    0%, 100% { transform: translateY(-20px) scale(1.05) rotate(-1deg); }
+    50% { transform: translateY(-30px) scale(1.08) rotate(1deg); }
+  }
+  .stat-card-mauve .card-body {
+    background: linear-gradient(135deg, #7d0758 0%, #d4a5c9 100%);
+  }
+  .stat-card-mauve h2, .stat-card-mauve p {
+    color: white;
+  }
+  .info-card {
+    background: white;
+    border-radius: 16px;
+    /* padding: 20px; */
+    box-shadow: 0 4px 20px rgba(10, 22, 40, 0.08);
+    border: 1px solid rgba(10, 22, 40, 0.1);
+    overflow: hidden;
+    height: 100%;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .info-card:hover {
+    transform: translateY(-10px) scale(1.01);
+    box-shadow: 0 25px 50px rgba(10, 22, 40, 0.2);
+    border-color: #1a2a3a;
+    z-index: 10;
+  }
+  .info-card .card-header {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: white;
+    font-weight: 600;
+    padding: 18px 20px;
+    border: none;
+  }
+  .info-card .list-group-item {
+    border-color: rgba(10, 22, 40, 0.1);
+    padding: 15px 20px;
+  }
+  .badge-blueblack {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+  }
+  .btn-view {
+    background: transparent;
+    border: 1px solid #1a2a3a;
+    color: #1a2a3a;
+    padding: 5px 15px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  .btn-view:hover {
+    background: #1a2a3a;
+    color: white;
+  }
+  .btn-approve {
+    background: #198754;
+    border: none;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+  }
+  .btn-approve:hover {
+    background: #157347;
+  }
+  .btn-reject {
+    background: transparent;
+    border: 1px solid #dc3545;
+    color: #dc3545;
+    padding: 5px 15px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+  }
+  .btn-reject:hover {
+    background: #dc3545;
+    color: white;
+  }
+  .dashboard-btn {
+    background: white;
+    border: 2px solid #1a2a3a;
+    color: #0a1628;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  .dashboard-btn:hover {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: white;
+    border-color: transparent;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+  <div class="container">
+    <div class="dashboard-header">
+      <div class="dashboard-header-left">
+        {% if user.profile_picture %}
+          <img src="{{ user.profile_picture.url }}" alt="{{ user.username }}" class="header-profile-img">
+        {% else %}
+          <div class="header-avatar-placeholder">{{ user.username|first|upper }}</div>
+        {% endif %}
+        <span class="header-username">{{ user.username }}</span>
+      </div>
+    </div>
+    <p class="text-muted mb-4">Manage platform, approve provider applications, and view analytics.</p>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-5">
+      <div class="col-sm-6 col-md-3">
+        <a href="{% url 'dashboard:manage_users' %}?role=PATIENT" class="stat-card stat-card-blueblack">
+          <div class="card-body">
+            <h2>{{ total_patients }}</h2>
+            <p>Patients</p>
+          </div>
+        </a>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <a href="{% url 'dashboard:manage_users' %}?role=PROVIDER" class="stat-card stat-card-yellow">
+          <div class="card-body">
+            <h2>{{ total_providers }}</h2>
+            <p>Providers</p>
+          </div>
+        </a>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <a href="{% url 'appointments:list' %}" class="stat-card stat-card-orange">
+          <div class="card-body">
+            <h2>{{ total_appointments }}</h2>
+            <p>Appointments</p>
+          </div>
+        </a>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <a href="{% url 'consultations:list' %}" class="stat-card stat-card-mauve">
+          <div class="card-body">
+            <h2>{{ total_consultations }}</h2>
+            <p>Consultations</p>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Info Cards -->
+    <div class="row g-4">
+      <div class="col-lg-6">
+        <div class="info-card h-100">
+          <div class="card-header">
+            <i class="bi bi-pie-chart"></i>
+            Appointments by Status
+          </div>
+          <ul class="list-group list-group-flush">
+            {% for row in appointments_by_status %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>{{ row.status }}</span>
+                <span class="badge-blueblack">{{ row.count }}</span>
+              </li>
+            {% empty %}
+              <li class="list-group-item text-muted text-center py-4">No appointment data available</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="info-card h-100">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-person-check"></i> Approve Provider Applications</span>
+            {% if pending_providers %}
+              <span class="badge bg-warning text-dark">{{ pending_providers|length }} pending</span>
+            {% endif %}
+          </div>
+          <div class="card-body p-0">
+            <ul class="list-group list-group-flush">
+              {% for prov in pending_providers %}
+                <li class="list-group-item">
+                  <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                    <div class="flex-grow-1">
+                      <strong>{{ prov.user.get_full_name|default:prov.user.username }}</strong>
+                      <span class="text-muted">({{ prov.user.username }})</span>
+                      <br>
+                      <small class="text-muted">{{ prov.credentials }} — {{ prov.specialization }}</small>
+                      {% if prov.license_number %}
+                        <br><small class="text-muted">License: {{ prov.license_number }}</small>
+                      {% endif %}
+                    </div>
+                    <div class="d-flex gap-1 flex-shrink-0 flex-wrap">
+                      <a href="{% url 'dashboard:provider_application_detail' prov.pk %}" class="btn-view" title="View full application">
+                        <i class="bi bi-eye"></i> View
+                      </a>
+                      <form method="post" action="{% url 'dashboard:approve_provider' prov.pk %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-approve" title="Approve">
+                          <i class="bi bi-check-lg"></i> Approve
+                        </button>
+                      </form>
+                      <form method="post" action="{% url 'dashboard:reject_provider' prov.pk %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-reject" title="Reject" onclick="return confirm('Reject this provider application?');">
+                          <i class="bi bi-x-lg"></i> Reject
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </li>
+              {% empty %}
+                <li class="list-group-item text-muted text-center py-4">No pending provider applications</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Actions -->
+    <div class="info-card mt-4" >
+      <div class="card-header">
+        <i class="bi bi-gear-wide-connected"></i>
+        Admin Actions
+      </div>
+      <div class="card-body" style="padding: 20px;">
+        <a href="{% url 'audit_logs:list' %}" class="dashboard-btn me-2"><i class="bi bi-journal-text"></i> Audit Logs</a>
+        <a href="{% url 'dashboard:providers' %}" class="dashboard-btn me-2"><i class="bi bi-heart-pulse"></i> Providers</a>
+        <a href="{% url 'dashboard:manage_users' %}" class="dashboard-btn me-2"><i class="bi bi-people"></i> All Users</a>
+        <a href="{% url 'admin:index' %}?django=1" class="btn btn-outline-secondary"><i class="bi bi-gear"></i> Django Admin</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

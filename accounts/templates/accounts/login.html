@@ -1,0 +1,367 @@
+{% extends "base_auth.html" %}
+{% load static %}
+
+{% block title %}Login — Telemedicine{% endblock %}
+
+{% block extra_css %}
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  .login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 50%, #0d1b2a 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .login-page::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('{% static "images/auth-card-bg.jpg" %}');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .login-page::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(10, 22, 40, 0.9) 0%, rgba(26, 42, 58, 0.7) 100%);
+  }
+
+  .login-container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 420px;
+    padding: 20px;
+  }
+
+  .login-card {
+    background: (135deg, #0a1628 0%, #1a2a3a 50%, #0d1b2a 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 50px 40px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    animation: fadeInUp 0.8s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .login-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .login-title {
+    color: rgb(255, 255, 255);
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .login-subtitle {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+  }
+
+  .form-group {
+    margin-bottom: 25px;
+  }
+
+  .form-label {
+    display: block;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    outline: none;
+  }
+
+  .form-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .login-btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #150350 0%, #2d2c2c 100%);
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+  }
+
+  .login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(247, 14, 57, 0.4);
+  }
+
+  .login-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+    padding-top: 25px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .login-link {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+  }
+
+  .login-link:hover {
+    color: white;
+  }
+
+  .register-section {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .register-title {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .register-buttons {
+    display: flex;
+    gap: 10px;
+  }
+
+  .register-btn {
+    flex: 1;
+    padding: 12px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+    background: transparent;
+    color: white;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    text-align: center;
+  }
+
+  .register-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+
+  .google-login-section {
+    margin-top: 25px;
+    text-align: center;
+  }
+
+  .google-login-text {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .google-btn {
+    width: 100%;
+    padding: 12px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+    background: transparent;
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .google-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+  }
+
+  .google-btn i {
+    font-size: 1.1rem;
+    color: #4285F4;
+  }
+
+  .home-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 25px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+    background: transparent;
+    color: white;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+  }
+
+  .home-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.6);
+    transform: translateX(-3px);
+  }
+
+  .home-btn i {
+    font-size: 1.1rem;
+  }
+
+  .error-message {
+    background: rgba(233, 69, 96, 0.2);
+    border: 1px solid rgba(233, 69, 96, 0.3);
+    color: #ffb3b3;
+    padding: 12px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+  }
+
+  /* Floating animation for card */
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .login-card {
+    animation: fadeInUp 0.8s ease-out, float 6s ease-in-out infinite;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-page">
+  <div class="login-container">
+    <a href="{% url 'dashboard:home' %}" class="home-btn">
+      <i class="bi bi-arrow-left"></i> Back to Home
+    </a>
+    <div class="login-card">
+      <div class="login-header">
+        <h1 class="login-title">Welcome</h1>
+        <p class="login-subtitle">Sign in to your account</p>
+      </div>
+
+      <form method="post" action="">
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+          <div class="error-message">
+            {% for error in form.non_field_errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="form-group">
+          <label class="form-label" for="id_username">Username</label>
+          <input 
+            type="text" 
+            name="username" 
+            id="id_username" 
+            class="form-input" 
+            placeholder="Enter your username"
+            required
+            autofocus
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="id_password">Password</label>
+          <input 
+            type="password" 
+            name="password" 
+            id="id_password" 
+            class="form-input" 
+            placeholder="Enter your password"
+            required
+          >
+        </div>
+
+        <button type="submit" class="login-btn">LOGIN</button>
+
+        <div class="login-links">
+          <a href="{% url 'accounts:password_reset' %}" class="login-link">Forgot Password?</a>
+          <a href="{% url 'accounts:register_patient' %}" class="login-link">Sign Up</a>
+        </div>
+
+        {% if 'allauth.socialaccount' in settings.INSTALLED_APPS %}
+        <div class="google-login-section">
+          <p class="google-login-text">Or continue with</p>
+          <a href="/auth/google/login/" class="google-btn">
+            <i class="bi bi-google"></i> Continue with Google
+          </a>
+        </div>
+        {% endif %}
+      </form>
+
+      <div class="register-section">
+        <p class="register-title">Or Register As</p>
+        <div class="register-buttons">
+          <a href="{% url 'accounts:register_patient' %}" class="register-btn">
+            <i class="bi bi-person"></i> Patient
+          </a>
+          <a href="{% url 'accounts:register_provider' %}" class="register-btn">
+            <i class="bi bi-heart-pulse"></i> Provider
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

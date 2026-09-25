@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Provider Application — {{ profile.user.get_full_name|default:profile.user.username }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  .dashboard-container {
+    background: linear-gradient(135deg,#09d2e822 50%);
+    min-height: calc(100vh - 70px);
+    padding: 30px 0;
+  }
+  .dashboard-header {
+    color: #0a1628;
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  .dashboard-header i {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+  }
+  .info-card {
+    background: rgb(255, 253, 253);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(4, 20, 79, 0.893);
+    border: 1px solid rgba(10, 22, 40, 0.1);
+    overflow: hidden;
+    margin-bottom: 25px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .info-card:hover {
+    transform: translateY(-10px) scale(1.01);
+    box-shadow: 0 25px 50px rgba(10, 22, 40, 0.2);
+    border-color: #1a2a3a;
+    z-index: 10;
+  }
+  .info-card .card-header {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: white;
+    font-weight: 600;
+    padding: 18px 20px;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .info-card .card-header i {
+    font-size: 1.2rem;
+  }
+  .info-card .card-body {
+    padding: 25px;
+  }
+  .info-card table th {
+    color: #0a0a0a;
+    font-weight: 600;
+  }
+  .document-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid rgba(10, 22, 40, 0.1);
+    padding: 20px;
+    height: 100%;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .document-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: #1a2a3a;
+    box-shadow: 0 15px 30px rgba(10, 22, 40, 0.2);
+    z-index: 10;
+  }
+  .document-card h6 {
+    color: #0a1628;
+    font-weight: 600;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-blueblack {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-blueblack:hover {
+    background: linear-gradient(135deg, #1a2a3a 0%, #0d1b2a 100%);
+    color: white;
+    transform: translateY(-2px);
+  }
+  .btn-outline-blueblack {
+    background: transparent;
+    border: 2px solid #1a2a3a;
+    color: #1a2a3a;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-outline-blueblack:hover {
+    background: #1a2a3a;
+    color: white;
+  }
+  .decision-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(10, 22, 40, 0.08);
+    border: 2px solid #1a2a3a;
+    overflow: hidden;
+    position: sticky;
+    top: 90px;
+  }
+  .decision-card .card-header {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: white;
+    font-weight: 600;
+    padding: 18px 20px;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .decision-card .card-body {
+    padding: 25px;
+  }
+  .btn-approve {
+    background: #198754;
+    border: none;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .btn-approve:hover {
+    background: #157347;
+    transform: translateY(-2px);
+  }
+  .btn-reject {
+    background: transparent;
+    border: 2px solid #dc3545;
+    color: #dc3545;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    width: 100%;
+  }
+  .btn-reject:hover {
+    background: #dc3545;
+    color: white;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+  <div class="container">
+    <a href="{% url 'dashboard:admin_dashboard' %}" class="btn btn-outline-secondary btn-sm mb-3">
+      <i class="bi bi-arrow-left"></i> Back to Admin Dashboard
+    </a>
+    <h2 class="dashboard-header">
+      <i class="bi bi-person-badge"></i>
+      Provider Application Review
+    </h2>
+    <p class="text-muted mb-4">Review all information and documents before approving or rejecting.</p>
+
+    {% if profile.approval_status != 'PENDING' %}
+      <div class="alert alert-warning">
+        This application has already been <strong>{{ profile.get_approval_status_display }}</strong>.
+      </div>
+    {% endif %}
+
+    <div class="row">
+      <div class="col-lg-8">
+        <div class="info-card">
+          <div class="card-header">
+            <i class="bi bi-person"></i> Personal Information
+          </div>
+          <div class="card-body">
+            <table class="table table-borderless mb-0">
+              <tr>
+                <th width="180">Full Name</th>
+                <td>{{ profile.user.get_full_name|default:"—" }}</td>
+              </tr>
+              <tr>
+                <th>Username</th>
+                <td>{{ profile.user.username }}</td>
+              </tr>
+              <tr>
+                <th>Email</th>
+                <td>{{ profile.user.email|default:"—" }}</td>
+              </tr>
+              <tr>
+                <th>Phone</th>
+                <td>{{ profile.user.phone|default:"—" }}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="card-header">
+            <i class="bi bi-award"></i> Professional Credentials
+          </div>
+          <div class="card-body">
+            <table class="table table-borderless mb-0">
+              <tr>
+                <th width="180">Credentials</th>
+                <td>{{ profile.credentials }}</td>
+              </tr>
+              <tr>
+                <th>Specialization</th>
+                <td>{{ profile.specialization }}</td>
+              </tr>
+              <tr>
+                <th>License Number</th>
+                <td>{{ profile.license_number|default:"—" }}</td>
+              </tr>
+              {% if profile.bio %}
+              <tr>
+                <th class="align-top">Bio</th>
+                <td>{{ profile.bio|linebreaks }}</td>
+              </tr>
+              {% endif %}
+            </table>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="card-header">
+            <i class="bi bi-file-earmark-medical"></i> Uploaded Documents
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <div class="document-card">
+                  <h6><i class="bi bi-award"></i> Professional Licence</h6>
+                  {% if profile.professional_licence %}
+                    <a href="{{ profile.professional_licence.url }}" target="_blank" class="btn-blueblack btn-sm w-100">
+                      <i class="bi bi-download"></i> View / Download
+                    </a>
+                    <small class="d-block mt-2 text-muted text-truncate" title="{{ profile.professional_licence.name }}">{{ profile.professional_licence.name }}</small>
+                  {% else %}
+                    <span class="text-muted">Not uploaded</span>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="document-card">
+                  <h6><i class="bi bi-mortarboard"></i> Academic Certificates</h6>
+                  {% if profile.academic_certificates %}
+                    <a href="{{ profile.academic_certificates.url }}" target="_blank" class="btn-blueblack btn-sm w-100">
+                      <i class="bi bi-download"></i> View / Download
+                    </a>
+                    <small class="d-block mt-2 text-muted text-truncate" title="{{ profile.academic_certificates.name }}">{{ profile.academic_certificates.name }}</small>
+                  {% else %}
+                    <span class="text-muted">Not uploaded</span>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="document-card">
+                  <h6><i class="bi bi-person-badge"></i> Identification Documents</h6>
+                  {% if profile.identification_documents %}
+                    <a href="{{ profile.identification_documents.url }}" target="_blank" class="btn-blueblack btn-sm w-100">
+                      <i class="bi bi-download"></i> View / Download
+                    </a>
+                    <small class="d-block mt-2 text-muted text-truncate" title="{{ profile.identification_documents.name }}">{{ profile.identification_documents.name }}</small>
+                  {% else %}
+                    <span class="text-muted">Not uploaded</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="decision-card">
+          <div class="card-header">
+            <i class="bi bi-check2-square"></i> Decision
+          </div>
+          <div class="card-body">
+            {% if profile.approval_status == 'PENDING' %}
+              <p class="small text-muted mb-3">Review the provider's information and documents above, then approve or reject the application.</p>
+              <form method="post" action="{% url 'dashboard:approve_provider' profile.pk %}" class="mb-2">
+                {% csrf_token %}
+                <button type="submit" class="btn-approve">
+                  <i class="bi bi-check-lg"></i> Approve Application
+                </button>
+              </form>
+              <form method="post" action="{% url 'dashboard:reject_provider' profile.pk %}" onsubmit="return confirm('Reject this provider application?');">
+                {% csrf_token %}
+                <button type="submit" class="btn-reject">
+                  <i class="bi bi-x-lg"></i> Reject Application
+                </button>
+              </form>
+            {% else %}
+              <p class="text-muted mb-0 small">Application status: <strong>{{ profile.get_approval_status_display }}</strong></p>
+              {% if profile.approved_at %}
+                <p class="text-muted mb-0 small">Processed on {{ profile.approved_at|date:"M d, Y" }}</p>
+              {% endif %}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

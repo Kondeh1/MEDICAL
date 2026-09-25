@@ -1,0 +1,373 @@
+{% extends "base.html" %}
+
+{% block title %}All Users — Medical Director{% endblock %}
+
+{% block extra_css %}
+<style>
+  .users-container {
+    background: linear-gradient(135deg,#09d2e822 50%); 
+    min-height: calc(100vh - 70px);
+    padding: 30px 0;
+  }
+  .users-header {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 50%, #0d1b2a 100%);
+    color: white;
+    padding: 40px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 15px 40px rgba(10, 22, 40, 0.25);
+    position: relative;
+    overflow: hidden;
+  }
+  .users-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255,193,7,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .users-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .users-header-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #18dae4 0%, #20c997 100%);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+    box-shadow: 0 8px 20px rgba(32, 201, 151, 0.3);
+  }
+  .users-header h2 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 2.2rem;
+  }
+  .users-header p {
+    margin: 5px 0 0 0;
+    opacity: 0.8;
+  }
+  .btn-back {
+    background: white;
+    color: #0a1628;
+    border: 1px solid #0a1628;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+  }
+  .btn-back:hover {
+    background: #0a1628;
+    color: white;
+  }
+  .btn-back i {
+    font-size: 1rem;
+  }
+  .filter-card {
+    background: rgb(255, 255, 255);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgb(9, 3, 75);
+    border: 1px solid rgba(10, 22, 40, 0.1);
+    margin-bottom: 25px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .filter-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(40, 19, 10, 0.15);
+    border-color: #18dae4;
+  }
+  .filter-card .card-body {
+    padding: 25px;
+  }
+  .btn-gold {
+    background: linear-gradient(135deg, #20c997 0%, #1abc9c 100%);
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  .btn-gold:hover {
+    background: linear-gradient(135deg, #1abc9c 0%, #20c997 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(32, 201, 151, 0.4);
+  }
+  .btn-outline-gold {
+    background: transparent;
+    border: 2px solid #20c997;
+    color: #0a1628;
+    padding: 8px 18px;
+    border-radius: 10px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-outline-gold:hover {
+    background: #20c997;
+    color: white;
+  }
+  .data-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(10, 22, 40, 0.08);
+    border: 1px solid rgba(10, 22, 40, 0.1);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .data-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(10, 22, 40, 0.2);
+    border-color: #ffc107;
+  }
+  .data-card thead {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: white;
+  }
+  .data-card thead th {
+    border: none;
+    font-weight: 600;
+    padding: 15px 20px;
+  }
+  .data-card tbody tr {
+    transition: background 0.2s ease;
+  }
+  .data-card tbody tr:hover {
+    background: rgba(255, 193, 7, 0.05);
+  }
+  .data-card tbody td {
+    padding: 15px 20px;
+    border-color: rgba(10, 22, 40, 0.1);
+  }
+  .badge-blueblack {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+  }
+  .btn-action {
+    padding: 6px 15px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .btn-action-view {
+    background: rgba(10, 22, 40, 0.1);
+    color: #0a1628;
+  }
+  .btn-action-view:hover {
+    background: #0a1628;
+    color: white;
+  }
+  .btn-action-activate {
+    background: rgba(32, 201, 151, 0.15);
+    color: #20c997;
+  }
+  .btn-action-activate:hover {
+    background: #20c997;
+    color: white;
+  }
+  .btn-action-deactivate {
+    background: rgba(32, 201, 151, 0.15);
+    color: #20c997;
+  }
+  .btn-action-deactivate:hover {
+    background: #20c997;
+    color: white;
+  }
+  .btn-action-delete {
+    background: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+  }
+  .btn-action-delete:hover {
+    background: #dc3545;
+    color: white;
+  }
+  .page-link {
+    color: #0a1628;
+    border-color: rgba(10, 22, 40, 0.2);
+  }
+  .page-link:hover {
+    background: #0a1628;
+    color: white;
+    border-color: #0a1628;
+  }
+  .page-item.disabled .page-link {
+    background: rgba(10, 22, 40, 0.05);
+    color: #6c757d;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="users-container">
+  <div class="container">
+    <a href="{% url 'dashboard:admin_dashboard' %}" class="btn-back">
+      <i class="bi bi-arrow-left"></i> Back to Admin Dashboard
+    </a>
+    <div class="users-header">
+      <div class="users-header-content">
+        <div class="users-header-icon">
+          <i class="bi bi-people"></i>
+        </div>
+        <div>
+          <h2>All Users</h2>
+          <p>Manage and monitor user accounts</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-card">
+      <div class="card-body">
+        <form method="get" class="row g-3">
+          <div class="col-md-4">
+            <label for="role" class="form-label fw-semibold">Filter by Role</label>
+            <select name="role" id="role" class="form-select">
+              <option value="">All roles</option>
+              {% for value, label in role_choices %}
+                <option value="{{ value }}" {% if role_filter == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label for="search" class="form-label fw-semibold">Search</label>
+            <input type="text" name="search" id="search" class="form-control" placeholder="Username, email, name..." value="{{ search }}">
+          </div>
+          <div class="col-md-4 d-flex align-items-end gap-2">
+            <button type="submit" class="btn-gold"><i class="bi bi-search"></i> Filter</button>
+            <a href="{% url 'dashboard:manage_users' %}" class="btn-outline-gold">Clear</a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="data-card">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Date Joined</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for u in page_obj %}
+                <tr class="{% if not u.is_active %}table-secondary{% endif %}">
+                  <td>
+                    <strong>{{ u.get_full_name|default:u.username }}</strong>
+                    <br>
+                    <small class="text-muted">{{ u.username }}{% if u.email %} · {{ u.email }}{% endif %}</small>
+                  </td>
+                  <td>
+                    <span class="badge
+                      {% if u.role == 'ADMIN' %}bg-danger
+                      {% elif u.role == 'PROVIDER' %}bg-info
+                      {% else %}badge-blueblack{% endif %}">
+                      {{ u.get_role_display }}
+                    </span>
+                  </td>
+                  <td>
+                    {% if u.is_active %}
+                      <span class="badge bg-success">Active</span>
+                    {% else %}
+                      <span class="badge bg-secondary">Inactive</span>
+                    {% endif %}
+                  </td>
+                  <td><small>{{ u.date_joined|date:"M d, Y" }}</small></td>
+                  <td class="text-end">
+                    <div class="d-flex gap-2 justify-content-end flex-wrap">
+                      {% if u.is_provider %}
+                        <a href="{% url 'dashboard:provider_credentials_detail' u.pk %}" class="btn-action btn-action-view" title="View Credentials">
+                          <i class="bi bi-person-badge"></i> View
+                        </a>
+                      {% endif %}
+                      {% if u != user %}
+                        {% if u.is_active %}
+                          <form method="post" action="{% url 'dashboard:user_deactivate' u.pk %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-action btn-action-deactivate" title="Deactivate">
+                              <i class="bi bi-pause-circle"></i> Deactivate
+                            </button>
+                          </form>
+                        {% else %}
+                          <form method="post" action="{% url 'dashboard:user_activate' u.pk %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-action btn-action-activate" title="Activate">
+                              <i class="bi bi-play-circle"></i> Activate
+                            </button>
+                          </form>
+                        {% endif %}
+                        <form method="post" action="{% url 'dashboard:user_delete' u.pk %}" class="d-inline" onsubmit="return confirm('Permanently delete {{ u.username }}? This cannot be undone.');">
+                          {% csrf_token %}
+                          <button type="submit" class="btn-action btn-action-delete" title="Delete">
+                            <i class="bi bi-trash"></i> Delete
+                          </button>
+                        </form>
+                      {% else %}
+                        <span class="text-muted small">(you)</span>
+                      {% endif %}
+                    </div>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="5" class="text-center text-muted py-5">No users found.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    {% if page_obj.has_other_pages %}
+      <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if role_filter %}&role={{ role_filter }}{% endif %}{% if search %}&search={{ search|urlencode }}{% endif %}">Previous</a>
+            </li>
+          {% endif %}
+          <li class="page-item disabled">
+            <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+          </li>
+          {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if role_filter %}&role={{ role_filter }}{% endif %}{% if search %}&search={{ search|urlencode }}{% endif %}">Next</a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

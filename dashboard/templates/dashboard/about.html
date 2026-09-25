@@ -1,0 +1,891 @@
+{% extends "base.html" %}
+
+{% block title %}About Us — Telemedical Consultation Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+  .about-container {
+    background: linear-gradient(135deg,#09d2e822 50%);
+    min-height: calc(100vh - 70px);
+  }
+  
+  /* Hero Section - With Background Image Slider */
+  .about-hero {
+    position: relative;
+    min-height: 400px;
+    color: white;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .hero-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+  
+  .hero-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+  }
+  
+  .hero-slide.active {
+    opacity: 1;
+  }
+  
+  .hero-slide::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(8, 20, 39, 0.92) 0%, rgba(45, 62, 80, 0.88) 50%, rgba(26, 38, 52, 0.92) 100%);
+  }
+  
+  .hero-slide::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+    background-size: 40px 40px;
+    opacity: 0.5;
+  }
+  
+  .about-hero-content {
+    position: relative;
+    z-index: 1;
+    padding: 100px 0 80px;
+  }
+  
+  /* Hero Dots Navigation */
+  .hero-dots {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    z-index: 2;
+  }
+  
+  .hero-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .hero-dot:hover {
+    background: rgba(255, 255, 255, 0.7);
+    transform: scale(1.2);
+  }
+  
+  .hero-dot.active {
+    background: #18dae4;
+    border-color: white;
+    transform: scale(1.3);
+    box-shadow: 0 0 15px rgba(24, 218, 228, 0.6);
+  }
+
+  @keyframes moveBackground {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(20px, 20px); }
+  }
+
+  .about-hero-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .about-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    animation: fadeInDown 1s ease-out;
+  }
+
+  .about-subtitle {
+    font-size: 1.3rem;
+    opacity: 0.9;
+    animation: fadeInUp 1s ease-out 0.3s both;
+  }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Section Cards - Matching Provider Cards */
+  .about-section-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(10, 22, 40, 0.08);
+    border: 1px solid rgba(10, 22, 40, 0.1);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    margin-bottom: 25px;
+  }
+  
+  .about-section-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(10, 22, 40, 0.2);
+    border-color: #18dae4;
+  }
+  
+  .about-section-card .card-header {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: white;
+    padding: 20px;
+    position: relative;
+  }
+  
+  .about-section-card .card-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #20c997, #18dae4);
+  }
+  
+  .about-section-card .card-body {
+    padding: 30px;
+  }
+
+  /* Mission Card */
+  .mission-card {
+    background: rgb(233, 245, 244);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(10, 22, 40, 0.08);
+    border: 1px solid rgba(10, 22, 40, 0.1);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    height: 100%;
+    cursor: pointer;
+  }
+  
+  .mission-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(10, 22, 40, 0.2);
+    border-color: #18dae4;
+  }
+  
+  .mission-card:hover .mission-icon {
+    transform: scale(1.1) rotate(5deg);
+  }
+  
+  .mission-card .card-header {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 100%);
+    color: white;
+    padding: 20px;
+    position: relative;
+  }
+  
+  .mission-card .card-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #20c997, #18dae4);
+  }
+  
+  .mission-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #20c997 0%, #18dae4 100%);
+    color: #130c58;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    border: 3px solid white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    margin: 0 auto;
+    transition: all 0.3s ease;
+  }
+
+  /* Team Cards */
+  .team-card {
+    background: rgb(233, 245, 244);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(10, 22, 40, 0.08);
+    border: 1px solid rgba(10, 22, 40, 0.1);
+    text-align: center;
+    padding: 30px 20px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    height: 100%;
+    cursor: pointer;
+  }
+  
+  .team-card:hover {
+    transform: translateY(-15px) scale(1.03);
+    box-shadow: 0 25px 50px rgba(10, 22, 40, 0.25);
+    border-color: #18dae4;
+  }
+  
+  .team-card:hover .team-avatar {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(32, 201, 151, 0.4);
+  }
+
+  .team-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #20c997 0%, #18dae4 100%);
+    color: #130c58;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 2.5rem;
+    font-weight: 700;
+    border: 3px solid white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+  }
+
+  /* Value Items */
+  .value-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 25px;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(10, 22, 40, 0.05);
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .value-item:hover {
+    transform: translateX(10px);
+    box-shadow: 0 8px 25px rgba(10, 22, 40, 0.15);
+    border-left: 4px solid #18dae4;
+  }
+  
+  .value-item:hover .value-icon {
+    transform: scale(1.1) rotate(-5deg);
+    box-shadow: 0 6px 15px rgba(32, 201, 151, 0.4);
+  }
+
+  .value-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #18dae4 0%, #20c997 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    margin-right: 15px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(32, 201, 151, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  /* Buttons */
+  .btn-gold {
+    background: linear-gradient(135deg, #20c0c9 0%, #20c997 100%);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .btn-gold:hover {
+    background: linear-gradient(135deg, #18dae4 0%, #18dae4 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(32, 201, 151, 0.4);
+  }
+  
+  .btn-outline-gold {
+    background: transparent;
+    border: 2px solid #18dae4;
+    color: #0a1628;
+    padding: 10px 28px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .btn-outline-gold:hover {
+    background: #18dae4;
+    color: white;
+  }
+
+  /* Section Title */
+  .section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: #0a1628;
+  }
+  
+  .section-subtitle {
+    color: #64748b;
+    font-size: 1.1rem;
+  }
+
+  /* CTA Section */
+  .cta-section {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 50%, #0d1b2a 100%);
+    color: white;
+    padding: 60px 40px;
+    border-radius: 20px;
+    margin-top: 30px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255,193,7,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  
+  .cta-section-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Scroll Animation */
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease;
+  }
+
+  .scroll-reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Contact Section Styles */
+  .contact-section {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a3a 50%, #0d1b2a 100%);
+    padding: 60px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .contact-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="0.5"/></svg>');
+    background-size: 100px 100px;
+    opacity: 0.5;
+  }
+  
+  .contact-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+  }
+  
+  @media (max-width: 768px) {
+    .contact-wrapper {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .contact-info {
+    padding: 50px;
+    background: #f8fafc;
+  }
+  
+  .contact-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #0a1628;
+    margin-bottom: 15px;
+  }
+  
+  .contact-desc {
+    color: #64748b;
+    margin-bottom: 30px;
+    line-height: 1.6;
+  }
+  
+  .contact-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 25px;
+  }
+  
+  .contact-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #18dae4 0%, #20c997 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    margin-right: 15px;
+    flex-shrink: 0;
+  }
+  
+  .contact-details h5 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #0a1628;
+    margin-bottom: 5px;
+  }
+  
+  .contact-details p {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 0;
+    line-height: 1.5;
+  }
+  
+  .social-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+  }
+  
+  .social-section h6 {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin-bottom: 15px;
+  }
+  
+  .social-icons {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .social-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #18dae4 0%, #20c997 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  
+  .social-icon:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(32, 201, 151, 0.4);
+  }
+  
+  .contact-form-wrapper {
+    padding: 50px;
+    background: white;
+  }
+  
+  .contact-form .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+  
+  @media (max-width: 576px) {
+    .contact-form .form-row {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .contact-form .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .contact-form label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #64748b;
+    margin-bottom: 5px;
+    display: block;
+  }
+  
+  .contact-form .form-control {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 15px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+  }
+  
+  .contact-form .form-control:focus {
+    border-color: #18dae4;
+    box-shadow: 0 0 0 3px rgba(24, 218, 228, 0.1);
+    background: white;
+  }
+  
+  .contact-form textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
+  }
+  
+  .btn-submit {
+    width: 100%;
+    background: linear-gradient(135deg, #18dae4 0%, #20c997 100%);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+  }
+  
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(32, 201, 151, 0.4);
+  }
+  
+  /* Mission Section - Standalone */
+  .mission-section {
+    background: linear-gradient(135deg,#09d2e822 50%);
+    padding: 80px 0;
+  }
+  
+  .mission-section .section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #0a1628;
+    margin-bottom: 1.5rem;
+  }
+  
+  .mission-section .lead {
+    font-size: 1.25rem;
+    line-height: 1.6;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Image Slider -->
+<section class="about-hero">
+  <!-- Background Image Slider -->
+  <div class="hero-slider">
+    <div class="hero-slide active" style="background-image: url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1920&q=80');"></div>
+    <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1551076805-e1869033e561?w=1920&q=80');"></div>
+    <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1584982751601-97dcc096659c?w=1920&q=80');"></div>
+    <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=1920&q=80');"></div>
+  </div>
+  
+  <!-- Content -->
+  <div class="container about-hero-content text-center">
+    <h1 class="about-title">About Us</h1>
+    <p class="about-subtitle">Transforming Healthcare Through Technology</p>
+  </div>
+  
+  <!-- Navigation Dots -->
+  <div class="hero-dots">
+    <div class="hero-dot active" onclick="changeSlide(0)" title="Image 1"></div>
+    <div class="hero-dot" onclick="changeSlide(1)" title="Image 2"></div>
+    <div class="hero-dot" onclick="changeSlide(2)" title="Image 3"></div>
+    <div class="hero-dot" onclick="changeSlide(3)" title="Image 4"></div>
+  </div>
+</section>
+
+<!-- Mission Section - Immediately after hero -->
+<section class="mission-section">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 scroll-reveal">
+        <h2 class="section-title">Our Mission</h2>
+        <p class="lead mb-4" style="color: #334155;">We believe that quality healthcare should be accessible to everyone, regardless of location or circumstance.</p>
+        <p class="mb-4" style="color: #64748b;">Our platform connects patients with licensed healthcare providers through secure, easy-to-use technology. We're committed to making healthcare more convenient, affordable, and accessible for all.</p>
+        <a href="{% url 'accounts:register_patient' %}" class="btn-gold">
+          <i class="bi bi-heart-pulse"></i> Join Our Community
+        </a>
+      </div>
+      <div class="col-lg-6 scroll-reveal">
+        <div class="mission-card">
+          <div class="card-header text-center">
+            <div class="mission-icon">
+              <i class="bi bi-bullseye"></i>
+            </div>
+          </div>
+          <div class="card-body text-center">
+            <h4 style="color: #0a1628; font-weight: 600;">Accessible Healthcare</h4>
+            <p style="color: #64748b;">Breaking down geographical barriers to connect patients with the care they need, when they need it.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="about-container">
+  <div class="container pt-5">
+
+    <!-- Values Section -->
+    <div class="about-section-card scroll-reveal">
+      <div class="card-header">
+        <h3 class="mb-0"><i class="bi bi-gem"></i> Our Core Values</h3>
+      </div>
+      <div class="card-body">
+        <p class="section-subtitle mb-4">The principles that guide everything we do</p>
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="value-item">
+              <div class="value-icon">
+                <i class="bi bi-shield-check"></i>
+              </div>
+              <div>
+                <h5 style="color: #0a1628; font-weight: 600;">Patient Safety First</h5>
+                <p style="color: #64748b; margin-bottom: 0;">We prioritize patient safety and data security above all else. Our platform uses enterprise-grade encryption and follows strict healthcare compliance standards.</p>
+              </div>
+            </div>
+            <div class="value-item">
+              <div class="value-icon">
+                <i class="bi bi-heart"></i>
+              </div>
+              <div>
+                <h5 style="color: #0a1628; font-weight: 600;">Compassionate Care</h5>
+                <p style="color: #64748b; margin-bottom: 0;">Technology should enhance, not replace, the human connection in healthcare. We design our platform to support meaningful patient-provider relationships.</p>
+              </div>
+            </div>
+            <div class="value-item">
+              <div class="value-icon">
+                <i class="bi bi-lightbulb"></i>
+              </div>
+              <div>
+                <h5 style="color: #0a1628; font-weight: 600;">Continuous Innovation</h5>
+                <p style="color: #64748b; margin-bottom: 0;">We're constantly improving our platform to incorporate the latest advancements in telemedicine and digital health technology.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="value-item">
+              <div class="value-icon">
+                <i class="bi bi-people"></i>
+              </div>
+              <div>
+                <h5 style="color: #0a1628; font-weight: 600;">Inclusivity</h5>
+                <p style="color: #64748b; margin-bottom: 0;">Healthcare is a universal right. We work to ensure our platform serves diverse populations with varying needs and abilities.</p>
+              </div>
+            </div>
+            <div class="value-item">
+              <div class="value-icon">
+                <i class="bi bi-award"></i>
+              </div>
+              <div>
+                <h5 style="color: #0a1628; font-weight: 600;">Excellence</h5>
+                <p style="color: #64748b; margin-bottom: 0;">We hold ourselves and our provider network to the highest standards of medical excellence and professional ethics.</p>
+              </div>
+            </div>
+            <div class="value-item">
+              <div class="value-icon">
+                <i class="bi bi-hand-thumbs-up"></i>
+              </div>
+              <div>
+                <h5 style="color: #0a1628; font-weight: 600;">Transparency</h5>
+                <p style="color: #64748b; margin-bottom: 0;">We believe in clear communication about our services, pricing, and data practices. No hidden fees or surprises.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Team Section -->
+    <div class="mt-5 scroll-reveal">
+      <h2 class="section-title text-center mb-2">Our Leadership</h2>
+      <p class="section-subtitle text-center mb-5">Meet the team behind our mission</p>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="team-card">
+            <div class="team-avatar">
+              <i class="bi bi-person" style="background-image: ;"></i>
+            </div>
+            <h5 style="color: #0a1628; font-weight: 600;">Dr. Shumah Johnson</h5>
+            <p style="color: #20c997; font-weight: 500; margin-bottom: 8px;">Chief Medical Officer</p>
+            <p style="color: #64748b; font-size: 0.9rem;">Board-certified physician with 15+ years of experience in family medicine.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="team-card">
+            <div class="team-avatar">
+              <i class="bi bi-person"></i>
+            </div>
+            <h5 style="color: #0a1628; font-weight: 600;">Michael Chen</h5>
+            <p style="color: #20c997; font-weight: 500; margin-bottom: 8px;">Chief Executive Officer</p>
+            <p style="color: #64748b; font-size: 0.9rem;">Healthcare technology entrepreneur passionate about digital transformation.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="team-card">
+            <div class="team-avatar">
+              <i class="bi bi-person"></i>
+            </div>
+            <h5 style="color: #0a1628; font-weight: 600;">Dr. Emily Rodriguez</h5>
+            <p style="color: #20c997; font-weight: 500; margin-bottom: 8px;">Head of Provider Relations</p>
+            <p style="color: #64748b; font-size: 0.9rem;">Dedicated to building our network of exceptional healthcare providers.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="cta-section scroll-reveal">
+      <div class="cta-section-content text-center">
+        <h2 class="mb-3">Ready to Experience Better Healthcare?</h2>
+        <p class="lead mb-4" style="opacity: 0.9;">Join thousands of patients and providers who trust our platform</p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+          <a href="{% url 'accounts:register_patient' %}" class="btn btn-light btn-lg rounded-pill px-5">
+            <i class="bi bi-person-plus"></i> Sign Up as Patient
+          </a>
+          <a href="{% url 'accounts:register_provider' %}" class="btn btn-outline-light btn-lg rounded-pill px-5">
+            <i class="bi bi-heart-pulse"></i> Join as Provider
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Scroll Reveal Animation
+  document.addEventListener('DOMContentLoaded', function() {
+    const scrollElements = document.querySelectorAll('.scroll-reveal');
+
+    const elementInView = (el, percentageScroll = 100) => {
+      const elementTop = el.getBoundingClientRect().top;
+      return (
+        elementTop <=
+        ((window.innerHeight || document.documentElement.clientHeight) * (percentageScroll / 100))
+      );
+    };
+
+    const displayScrollElement = (element) => {
+      element.classList.add('revealed');
+    };
+
+    const handleScrollAnimation = () => {
+      scrollElements.forEach((el) => {
+        if (elementInView(el, 85)) {
+          displayScrollElement(el);
+        }
+      });
+    };
+
+    window.addEventListener('scroll', () => {
+      handleScrollAnimation();
+    });
+
+    // Trigger once on load
+    handleScrollAnimation();
+  });
+  
+  // Hero Slider Functionality
+  let currentSlide = 0;
+  const slides = document.querySelectorAll('.hero-slide');
+  const dots = document.querySelectorAll('.hero-dot');
+  const totalSlides = slides.length;
+  let autoSlideInterval;
+  
+  function changeSlide(index) {
+    // Remove active class from current slide and dot
+    slides[currentSlide].classList.remove('active');
+    dots[currentSlide].classList.remove('active');
+    
+    // Update current slide index
+    currentSlide = index;
+    
+    // Add active class to new slide and dot
+    slides[currentSlide].classList.add('active');
+    dots[currentSlide].classList.add('active');
+    
+    // Reset auto-slide timer
+    resetAutoSlide();
+  }
+  
+  function nextSlide() {
+    const next = (currentSlide + 1) % totalSlides;
+    changeSlide(next);
+  }
+  
+  function resetAutoSlide() {
+    clearInterval(autoSlideInterval);
+    autoSlideInterval = setInterval(nextSlide, 5000);
+  }
+  
+  // Start auto-slide
+  autoSlideInterval = setInterval(nextSlide, 5000);
+</script>
+{% endblock %}

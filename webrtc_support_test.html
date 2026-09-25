@@ -1,0 +1,50 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>WebRTC Support Test</title>
+    </head>
+    <body>
+        <h1>WebRTC Support Test</h1>
+        <div id="results"></div>
+        <script>
+            const results = document.getElementById('results');
+            let output = '<h2>WebRTC Support Results:</h2>';
+            
+            // Check WebRTC support
+            output += '<p><strong>RTCPeerConnection:</strong> ' + 
+                     (typeof RTCPeerConnection !== 'undefined' ? '✅ Supported' : '❌ Not supported') + '</p>';
+            
+            // Check media devices
+            output += '<p><strong>MediaDevices:</strong> ' + 
+                     (navigator.mediaDevices ? '✅ Supported' : '❌ Not supported') + '</p>';
+            
+            // Check getUserMedia
+            output += '<p><strong>getUserMedia:</strong> ' + 
+                     (navigator.mediaDevices && navigator.mediaDevices.getUserMedia ? '✅ Supported' : '❌ Not supported') + '</p>';
+            
+            // Check audio context
+            output += '<p><strong>AudioContext:</strong> ' + 
+                     (typeof AudioContext !== 'undefined' ? '✅ Supported' : '❌ Not supported') + '</p>';
+            
+            // List available media devices
+            if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+                navigator.mediaDevices.enumerateDevices().then(devices => {
+                    output += '<h3>Available Media Devices:</h3><ul>';
+                    devices.forEach(device => {
+                        output += `<li>${device.kind}: ${device.label || 'Unnamed Device'}</li>`;
+                    });
+                    output += '</ul>';
+                    results.innerHTML = output;
+                }).catch(err => {
+                    output += `<p>Error enumerating devices: ${err.message}</p>`;
+                    results.innerHTML = output;
+                });
+            } else {
+                output += '<p>Cannot enumerate devices - MediaDevices API not available</p>';
+                results.innerHTML = output;
+            }
+        </script>
+    </body>
+    </html>
+    
